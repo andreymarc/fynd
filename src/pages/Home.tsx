@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase'
 import { Item } from '../types/database.types'
 import { Search, MapPin, Calendar, CheckCircle } from 'lucide-react'
 import { categories, ItemType, getCategoryById } from '../lib/categories'
+import VerifiedBadge from '../components/VerifiedBadge'
 
 export default function Home() {
   const [items, setItems] = useState<Item[]>([])
@@ -210,6 +211,11 @@ export default function Home() {
                         {claimCounts[item.id]} claim{claimCounts[item.id] > 1 ? 's' : ''}
                       </span>
                     )}
+                    <VerifiedBadge 
+                      verified={item.verified || false} 
+                      verificationStatus={item.verification_status}
+                      size="sm"
+                    />
                   </div>
                 </div>
                 {item.item_type && (

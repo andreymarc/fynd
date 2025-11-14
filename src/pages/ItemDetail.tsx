@@ -4,6 +4,9 @@ import { supabase } from '../lib/supabase'
 import { Item, Claim } from '../types/database.types'
 import { MapPin, Calendar, ArrowLeft, CheckCircle, XCircle, MessageSquare, Shield } from 'lucide-react'
 import { getCategoryById, ItemType } from '../lib/categories'
+import VerifiedBadge from '../components/VerifiedBadge'
+import TrustIndicators from '../components/TrustIndicators'
+import VerificationRequest from '../components/VerificationRequest'
 
 export default function ItemDetail() {
   const { id } = useParams<{ id: string }>()
@@ -227,6 +230,11 @@ export default function ItemDetail() {
                     Claim Approved
                   </span>
                 )}
+                <VerifiedBadge 
+                  verified={item.verified || false} 
+                  verificationStatus={item.verification_status}
+                  size="md"
+                />
               </div>
             </div>
           </div>
@@ -257,6 +265,53 @@ export default function ItemDetail() {
               })}
             </div>
           </div>
+
+          {/* Trust Indicators */}
+          <TrustIndicators item={item} />
+
+          {/* Verification Section - Owner Only */}
+          {isOwner && item.status === 'active' && (
+            <div className="pt-6 border-t border-gray-200">
+              {item.verified ? (
+                <div className="p-4 bg-green-50 rounded-lg border border-green-200">
+                  <p className="text-green-800 font-medium flex items-center gap-2">
+                    <CheckCircle size={20} />
+                    This item is verified
+                  </p>
+                  <p className="text-sm text-green-700 mt-1">
+                    Your item has been verified and displays a verified badge.
+                  </p>
+                </div>
+              ) : item.verification_status === 'pending' ? (
+                <div className="p-4 bg-yellow-50 rounded-lg border border-yellow-200">
+                  <p className="text-yellow-800 font-medium">Verification Pending</p>
+                  <p className="text-sm text-yellow-700 mt-1">
+                    Your verification request is being reviewed. You'll be notified once it's processed.
+                  </p>
+                </div>
+              ) : (
+                <div>
+                  {!showVerificationForm ? (
+                    <button
+                      onClick={() => setShowVerificationForm(true)}
+                      className="w-full px-4 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium flex items-center justify-center gap-2"
+                    >
+                      <Shield size={20} />
+                      Request Verification
+                    </button>
+                  ) : (
+                    <VerificationRequest
+                      itemId={item.id}
+                      onSuccess={() => {
+                        setShowVerificationForm(false)
+                        fetchItem()
+                      }}
+                    />
+                  )}
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Claim Section */}
           {item.status === 'active' && (

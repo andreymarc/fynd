@@ -16,6 +16,8 @@ A mobile-friendly web application for posting and finding lost items, built with
 - 🚫 Prevent duplicate claims
 - 🏷️ Categories/Tags - Predefined categories (Electronics, Clothing, Keys, Pets, etc.)
 - 🔍 Filter by category for better organization and discovery
+- ✅ Item Verification - Verified items badge, photo verification, trust indicators
+- 🛡️ Fraud Prevention - Verification system reduces fraudulent listings
 
 ## Tech Stack
 
@@ -61,6 +63,9 @@ CREATE TABLE items (
   contact_info TEXT,
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   status TEXT DEFAULT 'active' CHECK (status IN ('active', 'resolved')),
+  verified BOOLEAN DEFAULT false,
+  verification_status TEXT CHECK (verification_status IN ('pending', 'approved', 'rejected')),
+  verification_photos TEXT[],
   created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
 );

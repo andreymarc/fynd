@@ -11,6 +11,9 @@ export interface Item {
   created_at: string
   updated_at: string
   status: 'active' | 'resolved'
+  verified: boolean
+  verification_status?: 'pending' | 'approved' | 'rejected'
+  verification_photos?: string[]
   claims?: Claim[]
 }
 
@@ -32,5 +35,18 @@ export interface User {
   id: string
   email: string
   full_name?: string
+}
+
+export interface Verification {
+  id: string
+  item_id: string
+  user_id: string
+  status: 'pending' | 'approved' | 'rejected'
+  verification_photos: string[]
+  verification_notes?: string
+  verified_by?: string
+  verified_at?: string
+  created_at: string
+  updated_at: string
 }
 
