@@ -1,0 +1,248 @@
+import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
+import { supabase } from '../lib/supabase'
+import { Item } from '../types/database.types'
+import { Search, MapPin, Calendar, CheckCircle } from 'lucide-react'
+import { categories, ItemType, getCategoryById } from '../lib/categories'
+
+export default function Home() {
+  const [items, setItems] = useState<Item[]>([])
+  const [loading, setLoading] = useState(true)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [filter, setFilter] = useState<'all' | 'lost' | 'found'>('all')
+  const [itemTypeFilter, setItemTypeFilter] = useState<ItemType | 'all'>('all')
+  const [claimCounts, setClaimCounts] = useState<Record<string, number>>({})
+
+  useEffect(() => {
+    fetchItems()
+  }, [filter, itemTypeFilter])
+
+  useEffect(() => {
+    if (items.length > 0) {
+      fetchClaimCounts()
+    }
+  }, [items])
+
+  const fetchItems = async () => {
+    try {
+      let query = supabase
+        .from('items')
+        .select('*')
+        .eq('status', 'active')
+        .order('created_at', { ascending: false })
+        .limit(50)
+
+      if (filter !== 'all') {
+        query = query.eq('category', filter)
+      }
+
+      if (itemTypeFilter !== 'all') {
+        query = query.eq('item_type', itemTypeFilter)
+      }
+
+      const { data, error } = await query
+
+      if (error) throw error
+      setItems(data || [])
+    } catch (error) {
+      console.error('Error fetching items:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const fetchClaimCounts = async () => {
+    try {
+      const itemIds = items.map(item => item.id)
+      const { data, error } = await supabase
+        .from('claims')
+        .select('item_id, status')
+        .in('item_id', itemIds)
+        .eq('status', 'pending')
+
+      if (error) throw error
+
+      const counts: Record<string, number> = {}
+      data?.forEach(claim => {
+        counts[claim.item_id] = (counts[claim.item_id] || 0) + 1
+      })
+      setClaimCounts(counts)
+    } catch (error) {
+      console.error('Error fetching claim counts:', error)
+    }
+  }
+
+  const filteredItems = items.filter((item) =>
+    item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    item.description?.toLowerCase().includes(searchTerm.toLowerCase())
+  )
+
+  if (loading) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        <div className="text-center">Loading items...</div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="max-w-7xl mx-auto px-4 py-6 sm:py-8">
+      {/* Search and Filter */}
+      <div className="mb-6 space-y-4">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+          <input
+            type="text"
+            placeholder="Search items..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          />
+        </div>
+
+        <div className="space-y-3">
+          {/* Lost/Found Filter */}
+        <div className="flex gap-2">
+          <button
+            onClick={() => setFilter('all')}
+            className={`px-4 py-2.5 rounded-lg transition-colors font-medium touch-manipulation min-h-[44px] ${
+              filter === 'all'
+                ? 'bg-blue-600 text-white'
+                : 'bg-white text-gray-700 active:bg-gray-100'
+            }`}
+          >
+            All
+          </button>
+          <button
+            onClick={() => setFilter('lost')}
+            className={`px-4 py-2.5 rounded-lg transition-colors font-medium touch-manipulation min-h-[44px] ${
+              filter === 'lost'
+                ? 'bg-red-600 text-white'
+                : 'bg-white text-gray-700 active:bg-gray-100'
+            }`}
+          >
+            Lost
+          </button>
+          <button
+            onClick={() => setFilter('found')}
+            className={`px-4 py-2.5 rounded-lg transition-colors font-medium touch-manipulation min-h-[44px] ${
+              filter === 'found'
+                ? 'bg-green-600 text-white'
+                : 'bg-white text-gray-700 active:bg-gray-100'
+            }`}
+          >
+            Found
+          </button>
+        </div>
+
+          {/* Item Type Filter */}
+          <div>
+            <p className="text-sm font-medium text-gray-700 mb-2">Filter by Category:</p>
+            <div className="flex flex-wrap gap-2">
+              <button
+                onClick={() => setItemTypeFilter('all')}
+                className={`px-4 py-2.5 rounded-lg text-sm font-medium transition-colors touch-manipulation ${
+                  itemTypeFilter === 'all'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-white text-gray-700 active:bg-gray-100 border border-gray-200'
+                }`}
+              >
+                All Categories
+              </button>
+              {categories.map((cat) => {
+                const Icon = cat.icon
+                return (
+                  <button
+                    key={cat.id}
+                    onClick={() => setItemTypeFilter(cat.id)}
+                    className={`px-3 py-2.5 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5 touch-manipulation min-h-[44px] ${
+                      itemTypeFilter === cat.id
+                        ? cat.color + ' border-2 border-current'
+                        : 'bg-white text-gray-700 active:bg-gray-50 border border-gray-200'
+                    }`}
+                  >
+                    <Icon size={18} />
+                    <span className="whitespace-nowrap">{cat.name}</span>
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Items Grid */}
+      {filteredItems.length === 0 ? (
+        <div className="text-center py-12">
+          <p className="text-gray-500 text-lg">No items found</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {filteredItems.map((item) => (
+            <Link
+              key={item.id}
+              to={`/item/${item.id}`}
+              className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow p-4 border border-gray-200"
+            >
+              {item.image_url && (
+                <img
+                  src={item.image_url}
+                  alt={item.title}
+                  className="w-full h-48 object-cover rounded-lg mb-3"
+                />
+              )}
+              <div className="space-y-2">
+                <div className="flex items-start justify-between gap-2">
+                  <h3 className="font-semibold text-lg line-clamp-2 flex-1">{item.title}</h3>
+                  <div className="flex flex-col items-end gap-1">
+                    <span
+                      className={`px-2 py-1 rounded text-xs font-medium whitespace-nowrap ${
+                        item.category === 'lost'
+                          ? 'bg-red-100 text-red-800'
+                          : 'bg-green-100 text-green-800'
+                      }`}
+                    >
+                      {item.category}
+                    </span>
+                    {claimCounts[item.id] > 0 && (
+                      <span className="px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 flex items-center gap-1">
+                        <CheckCircle size={12} />
+                        {claimCounts[item.id]} claim{claimCounts[item.id] > 1 ? 's' : ''}
+                      </span>
+                    )}
+                  </div>
+                </div>
+                {item.item_type && (
+                  <div className="flex items-center gap-1">
+                    {(() => {
+                      const cat = getCategoryById(item.item_type as ItemType)
+                      const Icon = cat.icon
+                      return (
+                        <span className={`px-2 py-0.5 rounded text-xs font-medium flex items-center gap-1 ${cat.color}`}>
+                          <Icon size={12} />
+                          {cat.name}
+                        </span>
+                      )
+                    })()}
+                  </div>
+                )}
+                <p className="text-gray-600 text-sm line-clamp-2">{item.description}</p>
+                {item.location && (
+                  <div className="flex items-center text-gray-500 text-sm">
+                    <MapPin size={16} className="mr-1" />
+                    <span className="truncate">{item.location}</span>
+                  </div>
+                )}
+                <div className="flex items-center text-gray-400 text-xs">
+                  <Calendar size={14} className="mr-1" />
+                  {new Date(item.created_at).toLocaleDateString()}
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
