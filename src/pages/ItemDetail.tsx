@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { supabase } from '../lib/supabase'
 import { Item, Claim } from '../types/database.types'
 import { MapPin, Calendar, ArrowLeft, CheckCircle, XCircle, MessageSquare, Shield } from 'lucide-react'
@@ -9,6 +10,7 @@ import TrustIndicators from '../components/TrustIndicators'
 import VerificationRequest from '../components/VerificationRequest'
 
 export default function ItemDetail() {
+  const { t } = useTranslation()
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const [item, setItem] = useState<Item | null>(null)
@@ -131,7 +133,7 @@ export default function ItemDetail() {
       if (error) {
         if (error.code === '23505') {
           // Unique constraint violation - already claimed
-          alert('You have already claimed this item')
+          alert(t('itemDetail.alreadyClaimed'))
         } else {
           throw error
         }
@@ -193,7 +195,7 @@ export default function ItemDetail() {
       fetchClaims()
     } catch (error: any) {
       console.error('Error marking as resolved:', error)
-      alert('Failed to mark as resolved: ' + error.message)
+      alert(t('itemDetail.resolveError', 'Failed to mark as resolved: ') + error.message)
     }
   }
 
@@ -254,7 +256,7 @@ export default function ItemDetail() {
                       : 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300'
                   }`}
                 >
-                  {item.category}
+                  {item.category === 'lost' ? t('home.filterLost') : t('home.filterFound')}
                 </span>
                 {item.item_type && (() => {
                   const cat = getCategoryById(item.item_type as ItemType)
@@ -262,20 +264,20 @@ export default function ItemDetail() {
                   return (
                     <span className={`px-3 py-1 rounded text-sm font-medium flex items-center gap-1 ${cat.color} dark:opacity-90`}>
                       <Icon size={14} />
-                      {cat.name}
+                      {t(`categories.${item.item_type}`)}
                     </span>
                   )
                 })()}
                 {item.status === 'resolved' && (
                   <span className="px-3 py-1 rounded text-sm font-medium bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 flex items-center gap-1">
                     <CheckCircle size={14} />
-                    Resolved
+                    {t('itemDetail.status.resolved')}
                   </span>
                 )}
                 {approvedClaim && item.status === 'active' && (
                   <span className="px-3 py-1 rounded text-sm font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 flex items-center gap-1">
                     <Shield size={14} />
-                    Claim Approved
+                    {t('itemDetail.status.claimApproved')}
                   </span>
                 )}
                 <VerifiedBadge 
@@ -306,7 +308,7 @@ export default function ItemDetail() {
 
             <div className="flex items-center text-gray-500 dark:text-gray-400 text-sm">
               <Calendar size={16} className="mr-2" />
-              Posted on {new Date(item.created_at).toLocaleDateString('en-US', {
+              {t('itemDetail.postedOn')} {new Date(item.created_at).toLocaleDateString('en-US', {
                 year: 'numeric',
                 month: 'long',
                 day: 'numeric',
@@ -324,17 +326,17 @@ export default function ItemDetail() {
                 <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
                   <p className="text-green-800 dark:text-green-300 font-medium flex items-center gap-2">
                     <CheckCircle size={20} />
-                    This item is verified
+                    {t('itemDetail.verified')}
                   </p>
                   <p className="text-sm text-green-700 dark:text-green-400 mt-1">
-                    Your item has been verified and displays a verified badge.
+                    {t('itemDetail.verifiedDescription')}
                   </p>
                 </div>
               ) : item.verification_status === 'pending' ? (
                 <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
-                  <p className="text-yellow-800 dark:text-yellow-300 font-medium">Verification Pending</p>
+                  <p className="text-yellow-800 dark:text-yellow-300 font-medium">{t('itemDetail.verificationPending')}</p>
                   <p className="text-sm text-yellow-700 dark:text-yellow-400 mt-1">
-                    Your verification request is being reviewed. You'll be notified once it's processed.
+                    {t('itemDetail.verificationPendingDescription')}
                   </p>
                 </div>
               ) : (
@@ -345,7 +347,7 @@ export default function ItemDetail() {
                       className="w-full px-4 py-3 bg-purple-600 dark:bg-purple-500 text-white rounded-lg hover:bg-purple-700 dark:hover:bg-purple-600 transition-colors font-medium flex items-center justify-center gap-2"
                     >
                       <Shield size={20} />
-                      Request Verification
+                      {t('itemDetail.requestVerification')}
                     </button>
                   ) : (
                     <VerificationRequest
@@ -367,17 +369,17 @@ export default function ItemDetail() {
               {isOwner ? (
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Claims ({pendingClaims.length})</h3>
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{t('itemDetail.claims')} ({pendingClaims.length})</h3>
                     <button
                       onClick={markAsResolved}
                       className="px-4 py-2 bg-green-600 dark:bg-green-500 text-white rounded-lg hover:bg-green-700 dark:hover:bg-green-600 transition-colors text-sm"
                     >
-                      Mark as Resolved
+                      {t('itemDetail.markResolved')}
                     </button>
                   </div>
                   
                   {claims.length === 0 ? (
-                    <p className="text-gray-500 dark:text-gray-400 text-sm">No claims yet</p>
+                    <p className="text-gray-500 dark:text-gray-400 text-sm">{t('itemDetail.noClaims')}</p>
                   ) : (
                     <div className="space-y-3">
                       {claims.map((claim) => (
@@ -422,14 +424,14 @@ export default function ItemDetail() {
                                 className="flex items-center gap-1 px-3 py-1 bg-green-600 dark:bg-green-500 text-white rounded text-sm hover:bg-green-700 dark:hover:bg-green-600 transition-colors"
                               >
                                 <CheckCircle size={16} />
-                                Approve
+                                {t('common.approve')}
                               </button>
                               <button
                                 onClick={() => handleClaimStatus(claim.id, 'rejected')}
                                 className="flex items-center gap-1 px-3 py-1 bg-red-600 dark:bg-red-500 text-white rounded text-sm hover:bg-red-700 dark:hover:bg-red-600 transition-colors"
                               >
                                 <XCircle size={16} />
-                                Reject
+                                {t('common.reject')}
                               </button>
                             </div>
                           )}
@@ -446,15 +448,15 @@ export default function ItemDetail() {
                       className="w-full sm:w-auto px-6 py-4 bg-blue-600 dark:bg-blue-500 text-white rounded-lg active:bg-blue-700 dark:active:bg-blue-600 transition-colors font-medium flex items-center justify-center gap-2 touch-manipulation min-h-[52px]"
                     >
                       <MessageSquare size={20} />
-                      Claim This Item
+                      {t('itemDetail.claimItem')}
                     </button>
                   ) : (
                     <div className="space-y-3 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
-                      <h3 className="font-semibold text-gray-900 dark:text-gray-100">Claim this item</h3>
+                      <h3 className="font-semibold text-gray-900 dark:text-gray-100">{t('itemDetail.claimItem')}</h3>
                       <textarea
                         value={claimMessage}
                         onChange={(e) => setClaimMessage(e.target.value)}
-                        placeholder="Optional: Add a message to the owner..."
+                        placeholder={t('itemDetail.claimMessage')}
                         rows={3}
                         className="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
                       />
@@ -464,7 +466,7 @@ export default function ItemDetail() {
                           disabled={claiming}
                           className="px-4 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                          {claiming ? 'Submitting...' : 'Submit Claim'}
+                          {claiming ? t('itemDetail.submitting') : t('itemDetail.submitClaim')}
                         </button>
                         <button
                           onClick={() => {
@@ -473,30 +475,30 @@ export default function ItemDetail() {
                           }}
                           className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
                         >
-                          Cancel
+                          {t('itemDetail.cancel')}
                         </button>
                       </div>
                     </div>
                   )}
                   {hasClaimed && (
-                    <p className="text-sm text-gray-500 dark:text-gray-400">You have already claimed this item</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">{t('itemDetail.alreadyClaimed')}</p>
                   )}
                 </div>
               ) : !user ? (
                 <div className="text-center py-4">
-                  <p className="text-gray-600 dark:text-gray-400 mb-3">Want to claim this item?</p>
+                  <p className="text-gray-600 dark:text-gray-400 mb-3">{t('itemDetail.wantToClaim')}</p>
                   <Link
                     to="/login"
                     className="inline-block px-6 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors"
                   >
-                    Login to Claim
+                    {t('itemDetail.loginToClaim')}
                   </Link>
                 </div>
               ) : (
                 <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
-                  <p className="text-blue-800 dark:text-blue-300 font-medium">You have claimed this item</p>
+                  <p className="text-blue-800 dark:text-blue-300 font-medium">{t('itemDetail.youClaimed')}</p>
                   <p className="text-sm text-blue-600 dark:text-blue-400 mt-1">
-                    Waiting for owner's response...
+                    {t('itemDetail.waitingResponse')}
                   </p>
                 </div>
               )}
@@ -505,7 +507,7 @@ export default function ItemDetail() {
 
           {isOwner && item.status === 'resolved' && (
             <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
-              <p className="text-sm text-gray-500 dark:text-gray-400">This item has been resolved</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">{t('itemDetail.resolved')}</p>
             </div>
           )}
         </div>

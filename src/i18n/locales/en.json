@@ -100,7 +100,24 @@
   "common": {
     "loading": "Loading...",
     "error": "Error",
-    "success": "Success"
+    "success": "Success",
+    "approve": "Approve",
+    "reject": "Reject",
+    "verified": "Verified",
+    "itemNotFound": "Item not found",
+    "goBackHome": "Go back home"
+  },
+  "verification": {
+    "description": "Upload additional photos to verify your item. This helps build trust and reduces fraud. You need at least 2 photos showing different angles or details.",
+    "photos": "Verification Photos (2-5 photos)",
+    "photosUploaded": "photos uploaded",
+    "addPhoto": "Add Photo",
+    "notes": "Additional Notes (Optional)",
+    "notesPlaceholder": "Add any additional information that helps verify this item...",
+    "submit": "Submit Verification Request",
+    "submitted": "Verification request submitted! It will be reviewed shortly.",
+    "maxPhotos": "Maximum 5 photos allowed",
+    "minPhotos": "Please upload at least 2 verification photos"
   }
 }
 

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Upload, X, Loader } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 
@@ -8,6 +9,7 @@ interface VerificationRequestProps {
 }
 
 export default function VerificationRequest({ itemId, onSuccess }: VerificationRequestProps) {
+  const { t } = useTranslation()
   const [verificationPhotos, setVerificationPhotos] = useState<File[]>([])
   const [photoPreviews, setPhotoPreviews] = useState<string[]>([])
   const [notes, setNotes] = useState('')
@@ -17,7 +19,7 @@ export default function VerificationRequest({ itemId, onSuccess }: VerificationR
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || [])
     if (files.length + verificationPhotos.length > 5) {
-      setError('Maximum 5 photos allowed')
+      setError(t('verification.maxPhotos', 'Maximum 5 photos allowed'))
       return
     }
 
@@ -43,7 +45,7 @@ export default function VerificationRequest({ itemId, onSuccess }: VerificationR
     e.preventDefault()
     
     if (verificationPhotos.length < 2) {
-      setError('Please upload at least 2 verification photos')
+      setError(t('verification.minPhotos', 'Please upload at least 2 verification photos'))
       return
     }
 
@@ -101,7 +103,7 @@ export default function VerificationRequest({ itemId, onSuccess }: VerificationR
       setVerificationPhotos([])
       setPhotoPreviews([])
       setNotes('')
-      alert('Verification request submitted! It will be reviewed shortly.')
+      alert(t('verification.submitted', 'Verification request submitted! It will be reviewed shortly.'))
     } catch (error: any) {
       console.error('Error submitting verification:', error)
       setError(error.message || 'Failed to submit verification request')
@@ -112,10 +114,9 @@ export default function VerificationRequest({ itemId, onSuccess }: VerificationR
 
   return (
     <div className="p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
-      <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">Request Verification</h3>
+      <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">{t('itemDetail.requestVerification')}</h3>
       <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-        Upload additional photos to verify your item. This helps build trust and reduces fraud.
-        You need at least 2 photos showing different angles or details.
+        {t('verification.description', 'Upload additional photos to verify your item. This helps build trust and reduces fraud. You need at least 2 photos showing different angles or details.')}
       </p>
 
       {error && (
@@ -128,7 +129,7 @@ export default function VerificationRequest({ itemId, onSuccess }: VerificationR
         {/* Photo Upload */}
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Verification Photos (2-5 photos) *
+            {t('verification.photos', 'Verification Photos (2-5 photos)')} *
           </label>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-3">
             {photoPreviews.map((preview, index) => (
@@ -150,7 +151,7 @@ export default function VerificationRequest({ itemId, onSuccess }: VerificationR
             {photoPreviews.length < 5 && (
               <label className="flex flex-col items-center justify-center h-32 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                 <Upload className="w-6 h-6 text-gray-400 dark:text-gray-500 mb-1" />
-                <span className="text-xs text-gray-500 dark:text-gray-400">Add Photo</span>
+                <span className="text-xs text-gray-500 dark:text-gray-400">{t('verification.addPhoto', 'Add Photo')}</span>
                 <input
                   type="file"
                   accept="image/*"
@@ -162,14 +163,14 @@ export default function VerificationRequest({ itemId, onSuccess }: VerificationR
             )}
           </div>
           <p className="text-xs text-gray-500 dark:text-gray-400">
-            {verificationPhotos.length}/5 photos uploaded
+            {verificationPhotos.length}/5 {t('verification.photosUploaded', 'photos uploaded')}
           </p>
         </div>
 
         {/* Notes */}
         <div>
           <label htmlFor="notes" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            Additional Notes (Optional)
+            {t('verification.notes', 'Additional Notes (Optional)')}
           </label>
           <textarea
             id="notes"
@@ -177,7 +178,7 @@ export default function VerificationRequest({ itemId, onSuccess }: VerificationR
             onChange={(e) => setNotes(e.target.value)}
             rows={3}
             className="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
-            placeholder="Add any additional information that helps verify this item..."
+            placeholder={t('verification.notesPlaceholder', 'Add any additional information that helps verify this item...')}
           />
         </div>
 
@@ -189,10 +190,10 @@ export default function VerificationRequest({ itemId, onSuccess }: VerificationR
           {loading ? (
             <>
               <Loader className="animate-spin" size={20} />
-              Submitting...
+              {t('itemDetail.submitting')}
             </>
           ) : (
-            'Submit Verification Request'
+            t('verification.submit', 'Submit Verification Request')
           )}
         </button>
       </form>

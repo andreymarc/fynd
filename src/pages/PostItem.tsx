@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { supabase } from '../lib/supabase'
 import { Upload, X, MapPin, Loader } from 'lucide-react'
 import { categories, ItemType } from '../lib/categories'
 
 export default function PostItem() {
+  const { t } = useTranslation()
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [category, setCategory] = useState<'lost' | 'found'>('lost')
@@ -172,7 +174,7 @@ export default function PostItem() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-6 sm:py-8">
-      <h1 className="text-2xl font-bold mb-6 text-gray-900 dark:text-gray-100">Post a {category === 'lost' ? 'Lost' : 'Found'} Item</h1>
+      <h1 className="text-2xl font-bold mb-6 text-gray-900 dark:text-gray-100">{t('postItem.title', { type: category === 'lost' ? t('postItem.lost') : t('postItem.found') })}</h1>
 
       {error && (
         <div className="mb-4 p-3 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 rounded-lg text-sm">
@@ -184,7 +186,7 @@ export default function PostItem() {
         {/* Category Selection */}
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Type
+            {t('postItem.type')}
           </label>
           <div className="flex gap-4">
             <label className="flex items-center text-gray-900 dark:text-gray-100">
@@ -195,7 +197,7 @@ export default function PostItem() {
                 onChange={(e) => setCategory(e.target.value as 'lost' | 'found')}
                 className="mr-2"
               />
-              Lost
+              {t('postItem.lost')}
             </label>
             <label className="flex items-center text-gray-900 dark:text-gray-100">
               <input
@@ -205,7 +207,7 @@ export default function PostItem() {
                 onChange={(e) => setCategory(e.target.value as 'lost' | 'found')}
                 className="mr-2"
               />
-              Found
+              {t('postItem.found')}
             </label>
           </div>
         </div>
@@ -213,7 +215,7 @@ export default function PostItem() {
         {/* Item Type Selection */}
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Item Category *
+            {t('postItem.itemCategory')} *
           </label>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
             {categories.map((cat) => {
@@ -230,7 +232,7 @@ export default function PostItem() {
                   }`}
                 >
                   <Icon size={28} className={itemType === cat.id ? '' : 'text-gray-700 dark:text-gray-300'} />
-                  <span className={`text-xs font-medium text-center leading-tight ${itemType === cat.id ? '' : 'text-gray-700 dark:text-gray-300'}`}>{cat.name}</span>
+                  <span className={`text-xs font-medium text-center leading-tight ${itemType === cat.id ? '' : 'text-gray-700 dark:text-gray-300'}`}>{t(`categories.${cat.id}`)}</span>
                 </button>
               )
             })}
@@ -240,7 +242,7 @@ export default function PostItem() {
         {/* Title */}
         <div>
           <label htmlFor="title" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            Title *
+            {t('postItem.titleLabel')} *
           </label>
           <input
             id="title"
@@ -249,14 +251,14 @@ export default function PostItem() {
             onChange={(e) => setTitle(e.target.value)}
             required
             className="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
-            placeholder="e.g., Lost iPhone 13 Pro"
+            placeholder={t('postItem.titlePlaceholder')}
           />
         </div>
 
         {/* Description */}
         <div>
           <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            Description *
+            {t('postItem.description')} *
           </label>
           <textarea
             id="description"
@@ -265,16 +267,16 @@ export default function PostItem() {
             required
             rows={4}
             className="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
-            placeholder="Describe the item in detail..."
+            placeholder={t('postItem.descriptionPlaceholder')}
           />
         </div>
 
         {/* Location */}
         <div>
           <label htmlFor="location" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            Location
+            {t('postItem.location')}
             {category === 'found' && (
-              <span className="text-xs text-gray-500 dark:text-gray-400 ml-2">(Auto-detect available)</span>
+              <span className="text-xs text-gray-500 dark:text-gray-400 ml-2">{t('postItem.locationHint')}</span>
             )}
           </label>
           <div className="flex gap-2">
@@ -284,31 +286,31 @@ export default function PostItem() {
               value={location}
               onChange={(e) => setLocation(e.target.value)}
               className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
-              placeholder={category === 'found' ? "e.g., Central Park, New York (or click detect)" : "e.g., Central Park, New York"}
+              placeholder={category === 'found' ? t('postItem.locationDetectPlaceholder') : t('postItem.locationPlaceholder')}
             />
             <button
               type="button"
               onClick={detectLocation}
               disabled={detectingLocation}
               className="px-4 py-2.5 bg-green-600 dark:bg-green-500 text-white rounded-lg active:bg-green-700 dark:active:bg-green-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 whitespace-nowrap touch-manipulation min-h-[44px] font-medium"
-              title="Detect current location"
+              title={t('postItem.detect')}
             >
               {detectingLocation ? (
                 <>
                   <Loader className="animate-spin" size={20} />
-                  <span className="hidden sm:inline">Detecting...</span>
+                  <span className="hidden sm:inline">{t('postItem.detecting')}</span>
                 </>
               ) : (
                 <>
                   <MapPin size={20} />
-                  <span className="hidden sm:inline">Detect</span>
+                  <span className="hidden sm:inline">{t('postItem.detect')}</span>
                 </>
               )}
             </button>
           </div>
           {category === 'found' && !location && (
             <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-              💡 Tip: Click "Detect" to automatically fill your current location
+              {t('postItem.locationTip')}
             </p>
           )}
         </div>
@@ -316,7 +318,7 @@ export default function PostItem() {
         {/* Contact Info */}
         <div>
           <label htmlFor="contact" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            Contact Information
+            {t('postItem.contact')}
           </label>
           <input
             id="contact"
@@ -324,14 +326,14 @@ export default function PostItem() {
             value={contactInfo}
             onChange={(e) => setContactInfo(e.target.value)}
             className="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
-            placeholder="Phone number or email"
+            placeholder={t('postItem.contactPlaceholder')}
           />
         </div>
 
         {/* Image Upload */}
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Image
+            {t('postItem.image')}
           </label>
           {imagePreview ? (
             <div className="relative inline-block">
@@ -355,7 +357,7 @@ export default function PostItem() {
             <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 dark:border-gray-700 border-dashed rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
               <div className="flex flex-col items-center justify-center pt-5 pb-6">
                 <Upload className="w-8 h-8 mb-2 text-gray-400 dark:text-gray-500" />
-                <p className="text-sm text-gray-500 dark:text-gray-400">Click to upload image</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">{t('postItem.uploadImage')}</p>
               </div>
               <input
                 type="file"
@@ -372,7 +374,7 @@ export default function PostItem() {
           disabled={loading}
           className="w-full bg-blue-600 dark:bg-blue-500 text-white py-4 rounded-lg active:bg-blue-700 dark:active:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium text-lg touch-manipulation min-h-[52px]"
         >
-          {loading ? 'Posting...' : 'Post Item'}
+          {loading ? t('postItem.posting') : t('postItem.postItem')}
         </button>
       </form>
     </div>

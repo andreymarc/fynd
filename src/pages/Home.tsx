@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { supabase } from '../lib/supabase'
 import { Item } from '../types/database.types'
 import { Search, MapPin, Calendar, CheckCircle, RefreshCw } from 'lucide-react'
@@ -7,6 +8,7 @@ import { categories, ItemType, getCategoryById } from '../lib/categories'
 import VerifiedBadge from '../components/VerifiedBadge'
 
 export default function Home() {
+  const { t } = useTranslation()
   const [items, setItems] = useState<Item[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
@@ -181,14 +183,14 @@ export default function Home() {
     <div className="max-w-7xl mx-auto px-4 py-6 sm:py-8">
       {/* Manual Refresh Button - Real-time disabled to avoid Supabase costs */}
       <div className="mb-4 flex justify-end">
-        <button
-          onClick={handleRefresh}
-          className="px-4 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors text-sm font-medium flex items-center gap-2"
-          title="Refresh to see new items"
-        >
-          <RefreshCw size={16} />
-          Refresh Items
-        </button>
+          <button
+            onClick={handleRefresh}
+            className="px-4 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors text-sm font-medium flex items-center gap-2"
+            title={t('home.refreshItems')}
+          >
+            <RefreshCw size={16} />
+            {t('home.refreshItems')}
+          </button>
       </div>
 
       {/* Search and Filter */}
@@ -197,7 +199,7 @@ export default function Home() {
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500" size={20} />
           <input
             type="text"
-            placeholder="Search items..."
+            placeholder={t('home.searchPlaceholder')}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
@@ -215,7 +217,7 @@ export default function Home() {
                 : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 active:bg-gray-100 dark:active:bg-gray-700 border border-gray-200 dark:border-gray-700'
             }`}
           >
-            All
+            {t('home.filterAll')}
           </button>
           <button
             onClick={() => setFilter('lost')}
@@ -225,7 +227,7 @@ export default function Home() {
                 : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 active:bg-gray-100 dark:active:bg-gray-700 border border-gray-200 dark:border-gray-700'
             }`}
           >
-            Lost
+            {t('home.filterLost')}
           </button>
           <button
             onClick={() => setFilter('found')}
@@ -235,13 +237,13 @@ export default function Home() {
                 : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 active:bg-gray-100 dark:active:bg-gray-700 border border-gray-200 dark:border-gray-700'
             }`}
           >
-            Found
+            {t('home.filterFound')}
           </button>
         </div>
 
           {/* Item Type Filter */}
           <div>
-            <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Filter by Category:</p>
+            <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('home.filterCategory')}</p>
             <div className="flex flex-wrap gap-2">
               <button
                 onClick={() => setItemTypeFilter('all')}
@@ -251,7 +253,7 @@ export default function Home() {
                     : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 active:bg-gray-100 dark:active:bg-gray-700 border border-gray-200 dark:border-gray-700'
                 }`}
               >
-                All Categories
+                {t('home.allCategories')}
               </button>
               {categories.map((cat) => {
                 const Icon = cat.icon
@@ -278,7 +280,7 @@ export default function Home() {
       {/* Items Grid */}
       {filteredItems.length === 0 ? (
         <div className="text-center py-12">
-          <p className="text-gray-500 dark:text-gray-400 text-lg">No items found</p>
+          <p className="text-gray-500 dark:text-gray-400 text-lg">{t('home.noItems')}</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">

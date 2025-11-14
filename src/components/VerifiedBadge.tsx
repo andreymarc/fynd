@@ -1,4 +1,5 @@
 import { Shield, CheckCircle } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 interface VerifiedBadgeProps {
   verified: boolean
@@ -11,6 +12,7 @@ export default function VerifiedBadge({
   verificationStatus,
   size = 'md' 
 }: VerifiedBadgeProps) {
+  const { t } = useTranslation()
   if (!verified && verificationStatus !== 'pending') {
     return null
   }
@@ -31,7 +33,7 @@ export default function VerifiedBadge({
     return (
       <span className={`inline-flex items-center gap-1 rounded-full bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300 border border-yellow-200 dark:border-yellow-800 font-medium ${sizeClasses[size]}`}>
         <Shield size={iconSizes[size]} className="animate-pulse" />
-        <span>Verification Pending</span>
+        <span>{t('itemDetail.verificationPending')}</span>
       </span>
     )
   }
@@ -40,7 +42,7 @@ export default function VerifiedBadge({
     return (
       <span className={`inline-flex items-center gap-1 rounded-full bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 border border-green-200 dark:border-green-800 font-medium ${sizeClasses[size]}`}>
         <CheckCircle size={iconSizes[size]} />
-        <span>Verified</span>
+        <span>{t('common.verified', 'Verified')}</span>
       </span>
     )
   }
