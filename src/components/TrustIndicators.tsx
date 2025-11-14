@@ -19,8 +19,8 @@ export default function TrustIndicators({
     indicators.push({
       icon: Shield,
       label: 'Verified Item',
-      color: 'text-green-600',
-      bgColor: 'bg-green-50',
+      color: 'text-green-600 dark:text-green-400',
+      bgColor: 'bg-green-50 dark:bg-green-900/20',
       description: 'This item has been verified with additional photos'
     })
   }
@@ -31,8 +31,8 @@ export default function TrustIndicators({
     indicators.push({
       icon: Star,
       label: 'Active User',
-      color: 'text-blue-600',
-      bgColor: 'bg-blue-50',
+      color: 'text-blue-600 dark:text-blue-400',
+      bgColor: 'bg-blue-50 dark:bg-blue-900/20',
       description: 'User has posted multiple items'
     })
   }
@@ -44,8 +44,8 @@ export default function TrustIndicators({
       indicators.push({
         icon: CheckCircle,
         label: 'High Verification Rate',
-        color: 'text-purple-600',
-        bgColor: 'bg-purple-50',
+        color: 'text-purple-600 dark:text-purple-400',
+        bgColor: 'bg-purple-50 dark:bg-purple-900/20',
         description: `${Math.round(verificationRate)}% of user's items are verified`
       })
     }
@@ -59,8 +59,8 @@ export default function TrustIndicators({
     indicators.push({
       icon: Clock,
       label: 'Recently Posted',
-      color: 'text-orange-600',
-      bgColor: 'bg-orange-50',
+      color: 'text-orange-600 dark:text-orange-400',
+      bgColor: 'bg-orange-50 dark:bg-orange-900/20',
       description: `Posted ${daysSincePost === 0 ? 'today' : `${daysSincePost} day${daysSincePost > 1 ? 's' : ''} ago`}`
     })
   }
@@ -71,7 +71,7 @@ export default function TrustIndicators({
 
   return (
     <div className="space-y-2">
-      <h4 className="text-sm font-semibold text-gray-700">Trust Indicators</h4>
+      <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Trust Indicators</h4>
       <div className="space-y-2">
         {indicators.map((indicator, index) => {
           const Icon = indicator.icon
@@ -85,7 +85,7 @@ export default function TrustIndicators({
                 <p className={`text-sm font-medium ${indicator.color}`}>
                   {indicator.label}
                 </p>
-                <p className="text-xs text-gray-600 mt-0.5">
+                <p className="text-xs text-gray-600 dark:text-gray-400 mt-0.5">
                   {indicator.description}
                 </p>
               </div>

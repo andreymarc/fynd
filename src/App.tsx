@@ -31,15 +31,15 @@ function App() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-lg">Loading...</div>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950">
+        <div className="text-lg text-gray-900 dark:text-gray-100">Loading...</div>
       </div>
     )
   }
 
   return (
-    <Router>
-      <div className="min-h-screen bg-gray-50">
+    <Router future={{ v7_startTransition: true }}>
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
         <Navbar user={user} />
         <main className="pb-20">
           <Routes>

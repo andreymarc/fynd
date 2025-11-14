@@ -18,6 +18,7 @@ export default function ItemDetail() {
   const [claimMessage, setClaimMessage] = useState('')
   const [showClaimForm, setShowClaimForm] = useState(false)
   const [claiming, setClaiming] = useState(false)
+  const [showVerificationForm, setShowVerificationForm] = useState(false)
 
   useEffect(() => {
     fetchItem()
@@ -161,8 +162,8 @@ export default function ItemDetail() {
     return (
       <div className="max-w-4xl mx-auto px-4 py-8">
         <div className="text-center">
-          <p className="text-gray-500 mb-4">Item not found</p>
-          <Link to="/" className="text-blue-600 hover:text-blue-700">
+          <p className="text-gray-500 dark:text-gray-400 mb-4">Item not found</p>
+          <Link to="/" className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300">
             Go back home
           </Link>
         </div>
@@ -179,13 +180,13 @@ export default function ItemDetail() {
     <div className="max-w-4xl mx-auto px-4 py-6 sm:py-8">
       <button
         onClick={() => navigate(-1)}
-        className="flex items-center text-gray-600 hover:text-gray-900 mb-6"
+        className="flex items-center text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 mb-6"
       >
         <ArrowLeft size={20} className="mr-2" />
         Back
       </button>
 
-      <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden border border-gray-200 dark:border-gray-700">
         {item.image_url && (
           <img
             src={item.image_url}
@@ -197,13 +198,13 @@ export default function ItemDetail() {
         <div className="p-6">
           <div className="flex items-start justify-between mb-4">
             <div className="flex-1">
-              <h1 className="text-2xl sm:text-3xl font-bold mb-2">{item.title}</h1>
+              <h1 className="text-2xl sm:text-3xl font-bold mb-2 text-gray-900 dark:text-gray-100">{item.title}</h1>
               <div className="flex items-center gap-2 flex-wrap">
                 <span
                   className={`px-3 py-1 rounded text-sm font-medium ${
                     item.category === 'lost'
-                      ? 'bg-red-100 text-red-800'
-                      : 'bg-green-100 text-green-800'
+                      ? 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300'
+                      : 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300'
                   }`}
                 >
                   {item.category}
@@ -212,20 +213,20 @@ export default function ItemDetail() {
                   const cat = getCategoryById(item.item_type as ItemType)
                   const Icon = cat.icon
                   return (
-                    <span className={`px-3 py-1 rounded text-sm font-medium flex items-center gap-1 ${cat.color}`}>
+                    <span className={`px-3 py-1 rounded text-sm font-medium flex items-center gap-1 ${cat.color} dark:opacity-90`}>
                       <Icon size={14} />
                       {cat.name}
                     </span>
                   )
                 })()}
                 {item.status === 'resolved' && (
-                  <span className="px-3 py-1 rounded text-sm font-medium bg-gray-100 text-gray-800 flex items-center gap-1">
+                  <span className="px-3 py-1 rounded text-sm font-medium bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 flex items-center gap-1">
                     <CheckCircle size={14} />
                     Resolved
                   </span>
                 )}
                 {approvedClaim && item.status === 'active' && (
-                  <span className="px-3 py-1 rounded text-sm font-medium bg-blue-100 text-blue-800 flex items-center gap-1">
+                  <span className="px-3 py-1 rounded text-sm font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 flex items-center gap-1">
                     <Shield size={14} />
                     Claim Approved
                   </span>
@@ -240,10 +241,10 @@ export default function ItemDetail() {
           </div>
 
           <div className="space-y-4 mb-6">
-            <p className="text-gray-700 text-lg">{item.description}</p>
+            <p className="text-gray-700 dark:text-gray-300 text-lg">{item.description}</p>
 
             {item.location && (
-              <div className="flex items-center text-gray-600">
+              <div className="flex items-center text-gray-600 dark:text-gray-400">
                 <MapPin size={20} className="mr-2" />
                 <span>{item.location}</span>
               </div>
@@ -251,12 +252,12 @@ export default function ItemDetail() {
 
             {item.contact_info && (
               <div>
-                <p className="text-sm font-medium text-gray-700 mb-1">Contact:</p>
-                <p className="text-gray-600">{item.contact_info}</p>
+                <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Contact:</p>
+                <p className="text-gray-600 dark:text-gray-400">{item.contact_info}</p>
               </div>
             )}
 
-            <div className="flex items-center text-gray-500 text-sm">
+            <div className="flex items-center text-gray-500 dark:text-gray-400 text-sm">
               <Calendar size={16} className="mr-2" />
               Posted on {new Date(item.created_at).toLocaleDateString('en-US', {
                 year: 'numeric',
@@ -271,21 +272,21 @@ export default function ItemDetail() {
 
           {/* Verification Section - Owner Only */}
           {isOwner && item.status === 'active' && (
-            <div className="pt-6 border-t border-gray-200">
+            <div className="pt-6 border-t border-gray-200 dark:border-gray-700">
               {item.verified ? (
-                <div className="p-4 bg-green-50 rounded-lg border border-green-200">
-                  <p className="text-green-800 font-medium flex items-center gap-2">
+                <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+                  <p className="text-green-800 dark:text-green-300 font-medium flex items-center gap-2">
                     <CheckCircle size={20} />
                     This item is verified
                   </p>
-                  <p className="text-sm text-green-700 mt-1">
+                  <p className="text-sm text-green-700 dark:text-green-400 mt-1">
                     Your item has been verified and displays a verified badge.
                   </p>
                 </div>
               ) : item.verification_status === 'pending' ? (
-                <div className="p-4 bg-yellow-50 rounded-lg border border-yellow-200">
-                  <p className="text-yellow-800 font-medium">Verification Pending</p>
-                  <p className="text-sm text-yellow-700 mt-1">
+                <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
+                  <p className="text-yellow-800 dark:text-yellow-300 font-medium">Verification Pending</p>
+                  <p className="text-sm text-yellow-700 dark:text-yellow-400 mt-1">
                     Your verification request is being reviewed. You'll be notified once it's processed.
                   </p>
                 </div>
@@ -294,7 +295,7 @@ export default function ItemDetail() {
                   {!showVerificationForm ? (
                     <button
                       onClick={() => setShowVerificationForm(true)}
-                      className="w-full px-4 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium flex items-center justify-center gap-2"
+                      className="w-full px-4 py-3 bg-purple-600 dark:bg-purple-500 text-white rounded-lg hover:bg-purple-700 dark:hover:bg-purple-600 transition-colors font-medium flex items-center justify-center gap-2"
                     >
                       <Shield size={20} />
                       Request Verification
@@ -315,21 +316,21 @@ export default function ItemDetail() {
 
           {/* Claim Section */}
           {item.status === 'active' && (
-            <div className="pt-6 border-t border-gray-200">
+            <div className="pt-6 border-t border-gray-200 dark:border-gray-700">
               {isOwner ? (
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-semibold">Claims ({pendingClaims.length})</h3>
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Claims ({pendingClaims.length})</h3>
                     <button
                       onClick={markAsResolved}
-                      className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm"
+                      className="px-4 py-2 bg-green-600 dark:bg-green-500 text-white rounded-lg hover:bg-green-700 dark:hover:bg-green-600 transition-colors text-sm"
                     >
                       Mark as Resolved
                     </button>
                   </div>
                   
                   {claims.length === 0 ? (
-                    <p className="text-gray-500 text-sm">No claims yet</p>
+                    <p className="text-gray-500 dark:text-gray-400 text-sm">No claims yet</p>
                   ) : (
                     <div className="space-y-3">
                       {claims.map((claim) => (
@@ -337,48 +338,48 @@ export default function ItemDetail() {
                           key={claim.id}
                           className={`p-4 rounded-lg border ${
                             claim.status === 'approved'
-                              ? 'bg-green-50 border-green-200'
+                              ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800'
                               : claim.status === 'rejected'
-                              ? 'bg-red-50 border-red-200'
-                              : 'bg-gray-50 border-gray-200'
+                              ? 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800'
+                              : 'bg-gray-50 dark:bg-gray-700/50 border-gray-200 dark:border-gray-600'
                           }`}
                         >
                           <div className="flex items-start justify-between mb-2">
                             <div>
-                              <p className="font-medium text-sm">
+                              <p className="font-medium text-sm text-gray-900 dark:text-gray-100">
                                 {claim.claimed_by?.email || `User ${claim.claimed_by_user_id.slice(0, 8)}...`}
                               </p>
-                              <p className="text-xs text-gray-500">
+                              <p className="text-xs text-gray-500 dark:text-gray-400">
                                 {new Date(claim.created_at).toLocaleDateString()}
                               </p>
                             </div>
                             <span
                               className={`px-2 py-1 rounded text-xs font-medium ${
                                 claim.status === 'approved'
-                                  ? 'bg-green-200 text-green-800'
+                                  ? 'bg-green-200 dark:bg-green-800 text-green-800 dark:text-green-300'
                                   : claim.status === 'rejected'
-                                  ? 'bg-red-200 text-red-800'
-                                  : 'bg-yellow-200 text-yellow-800'
+                                  ? 'bg-red-200 dark:bg-red-800 text-red-800 dark:text-red-300'
+                                  : 'bg-yellow-200 dark:bg-yellow-800 text-yellow-800 dark:text-yellow-300'
                               }`}
                             >
                               {claim.status}
                             </span>
                           </div>
                           {claim.message && (
-                            <p className="text-sm text-gray-700 mt-2">{claim.message}</p>
+                            <p className="text-sm text-gray-700 dark:text-gray-300 mt-2">{claim.message}</p>
                           )}
                           {claim.status === 'pending' && (
                             <div className="flex gap-2 mt-3">
                               <button
                                 onClick={() => handleClaimStatus(claim.id, 'approved')}
-                                className="flex items-center gap-1 px-3 py-1 bg-green-600 text-white rounded text-sm hover:bg-green-700 transition-colors"
+                                className="flex items-center gap-1 px-3 py-1 bg-green-600 dark:bg-green-500 text-white rounded text-sm hover:bg-green-700 dark:hover:bg-green-600 transition-colors"
                               >
                                 <CheckCircle size={16} />
                                 Approve
                               </button>
                               <button
                                 onClick={() => handleClaimStatus(claim.id, 'rejected')}
-                                className="flex items-center gap-1 px-3 py-1 bg-red-600 text-white rounded text-sm hover:bg-red-700 transition-colors"
+                                className="flex items-center gap-1 px-3 py-1 bg-red-600 dark:bg-red-500 text-white rounded text-sm hover:bg-red-700 dark:hover:bg-red-600 transition-colors"
                               >
                                 <XCircle size={16} />
                                 Reject
@@ -395,26 +396,26 @@ export default function ItemDetail() {
                   {!showClaimForm ? (
                     <button
                       onClick={() => setShowClaimForm(true)}
-                      className="w-full sm:w-auto px-6 py-4 bg-blue-600 text-white rounded-lg active:bg-blue-700 transition-colors font-medium flex items-center justify-center gap-2 touch-manipulation min-h-[52px]"
+                      className="w-full sm:w-auto px-6 py-4 bg-blue-600 dark:bg-blue-500 text-white rounded-lg active:bg-blue-700 dark:active:bg-blue-600 transition-colors font-medium flex items-center justify-center gap-2 touch-manipulation min-h-[52px]"
                     >
                       <MessageSquare size={20} />
                       Claim This Item
                     </button>
                   ) : (
-                    <div className="space-y-3 p-4 bg-blue-50 rounded-lg border border-blue-200">
-                      <h3 className="font-semibold">Claim this item</h3>
+                    <div className="space-y-3 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                      <h3 className="font-semibold text-gray-900 dark:text-gray-100">Claim this item</h3>
                       <textarea
                         value={claimMessage}
                         onChange={(e) => setClaimMessage(e.target.value)}
                         placeholder="Optional: Add a message to the owner..."
                         rows={3}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
                       />
                       <div className="flex gap-2">
                         <button
                           onClick={handleClaim}
                           disabled={claiming}
-                          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="px-4 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           {claiming ? 'Submitting...' : 'Submit Claim'}
                         </button>
@@ -423,7 +424,7 @@ export default function ItemDetail() {
                             setShowClaimForm(false)
                             setClaimMessage('')
                           }}
-                          className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
+                          className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
                         >
                           Cancel
                         </button>
@@ -431,23 +432,23 @@ export default function ItemDetail() {
                     </div>
                   )}
                   {hasClaimed && (
-                    <p className="text-sm text-gray-500">You have already claimed this item</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">You have already claimed this item</p>
                   )}
                 </div>
               ) : !user ? (
                 <div className="text-center py-4">
-                  <p className="text-gray-600 mb-3">Want to claim this item?</p>
+                  <p className="text-gray-600 dark:text-gray-400 mb-3">Want to claim this item?</p>
                   <Link
                     to="/login"
-                    className="inline-block px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                    className="inline-block px-6 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors"
                   >
                     Login to Claim
                   </Link>
                 </div>
               ) : (
-                <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-                  <p className="text-blue-800 font-medium">You have claimed this item</p>
-                  <p className="text-sm text-blue-600 mt-1">
+                <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                  <p className="text-blue-800 dark:text-blue-300 font-medium">You have claimed this item</p>
+                  <p className="text-sm text-blue-600 dark:text-blue-400 mt-1">
                     Waiting for owner's response...
                   </p>
                 </div>
@@ -456,8 +457,8 @@ export default function ItemDetail() {
           )}
 
           {isOwner && item.status === 'resolved' && (
-            <div className="pt-4 border-t border-gray-200">
-              <p className="text-sm text-gray-500">This item has been resolved</p>
+            <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+              <p className="text-sm text-gray-500 dark:text-gray-400">This item has been resolved</p>
             </div>
           )}
         </div>

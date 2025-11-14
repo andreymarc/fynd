@@ -29,7 +29,7 @@ export default function VerifiedBadge({
 
   if (verificationStatus === 'pending') {
     return (
-      <span className={`inline-flex items-center gap-1 rounded-full bg-yellow-100 text-yellow-800 border border-yellow-200 font-medium ${sizeClasses[size]}`}>
+      <span className={`inline-flex items-center gap-1 rounded-full bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300 border border-yellow-200 dark:border-yellow-800 font-medium ${sizeClasses[size]}`}>
         <Shield size={iconSizes[size]} className="animate-pulse" />
         <span>Verification Pending</span>
       </span>
@@ -38,7 +38,7 @@ export default function VerifiedBadge({
 
   if (verified) {
     return (
-      <span className={`inline-flex items-center gap-1 rounded-full bg-green-100 text-green-800 border border-green-200 font-medium ${sizeClasses[size]}`}>
+      <span className={`inline-flex items-center gap-1 rounded-full bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 border border-green-200 dark:border-green-800 font-medium ${sizeClasses[size]}`}>
         <CheckCircle size={iconSizes[size]} />
         <span>Verified</span>
       </span>

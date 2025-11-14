@@ -172,22 +172,22 @@ export default function PostItem() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-6 sm:py-8">
-      <h1 className="text-2xl font-bold mb-6">Post a {category === 'lost' ? 'Lost' : 'Found'} Item</h1>
+      <h1 className="text-2xl font-bold mb-6 text-gray-900 dark:text-gray-100">Post a {category === 'lost' ? 'Lost' : 'Found'} Item</h1>
 
       {error && (
-        <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-lg text-sm">
+        <div className="mb-4 p-3 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 rounded-lg text-sm">
           {error}
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-6 bg-white rounded-lg shadow-sm p-6">
+      <form onSubmit={handleSubmit} className="space-y-6 bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-700">
         {/* Category Selection */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Type
           </label>
           <div className="flex gap-4">
-            <label className="flex items-center">
+            <label className="flex items-center text-gray-900 dark:text-gray-100">
               <input
                 type="radio"
                 value="lost"
@@ -197,7 +197,7 @@ export default function PostItem() {
               />
               Lost
             </label>
-            <label className="flex items-center">
+            <label className="flex items-center text-gray-900 dark:text-gray-100">
               <input
                 type="radio"
                 value="found"
@@ -212,7 +212,7 @@ export default function PostItem() {
 
         {/* Item Type Selection */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Item Category *
           </label>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
@@ -225,12 +225,12 @@ export default function PostItem() {
                   onClick={() => setItemType(cat.id)}
                   className={`p-4 rounded-lg border-2 transition-all flex flex-col items-center gap-2 touch-manipulation min-h-[80px] active:scale-95 ${
                     itemType === cat.id
-                      ? cat.color + ' border-current'
-                      : 'bg-white border-gray-200 active:border-gray-300'
+                      ? cat.color + ' border-current dark:border-opacity-80'
+                      : 'bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 active:border-gray-300 dark:active:border-gray-500'
                   }`}
                 >
-                  <Icon size={28} />
-                  <span className="text-xs font-medium text-center leading-tight">{cat.name}</span>
+                  <Icon size={28} className={itemType === cat.id ? '' : 'text-gray-700 dark:text-gray-300'} />
+                  <span className={`text-xs font-medium text-center leading-tight ${itemType === cat.id ? '' : 'text-gray-700 dark:text-gray-300'}`}>{cat.name}</span>
                 </button>
               )
             })}
@@ -239,7 +239,7 @@ export default function PostItem() {
 
         {/* Title */}
         <div>
-          <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="title" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             Title *
           </label>
           <input
@@ -248,14 +248,14 @@ export default function PostItem() {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             required
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
             placeholder="e.g., Lost iPhone 13 Pro"
           />
         </div>
 
         {/* Description */}
         <div>
-          <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             Description *
           </label>
           <textarea
@@ -264,17 +264,17 @@ export default function PostItem() {
             onChange={(e) => setDescription(e.target.value)}
             required
             rows={4}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
             placeholder="Describe the item in detail..."
           />
         </div>
 
         {/* Location */}
         <div>
-          <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="location" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             Location
             {category === 'found' && (
-              <span className="text-xs text-gray-500 ml-2">(Auto-detect available)</span>
+              <span className="text-xs text-gray-500 dark:text-gray-400 ml-2">(Auto-detect available)</span>
             )}
           </label>
           <div className="flex gap-2">
@@ -283,14 +283,14 @@ export default function PostItem() {
               type="text"
               value={location}
               onChange={(e) => setLocation(e.target.value)}
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
               placeholder={category === 'found' ? "e.g., Central Park, New York (or click detect)" : "e.g., Central Park, New York"}
             />
             <button
               type="button"
               onClick={detectLocation}
               disabled={detectingLocation}
-              className="px-4 py-2.5 bg-green-600 text-white rounded-lg active:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 whitespace-nowrap touch-manipulation min-h-[44px] font-medium"
+              className="px-4 py-2.5 bg-green-600 dark:bg-green-500 text-white rounded-lg active:bg-green-700 dark:active:bg-green-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 whitespace-nowrap touch-manipulation min-h-[44px] font-medium"
               title="Detect current location"
             >
               {detectingLocation ? (
@@ -307,7 +307,7 @@ export default function PostItem() {
             </button>
           </div>
           {category === 'found' && !location && (
-            <p className="mt-1 text-xs text-gray-500">
+            <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
               💡 Tip: Click "Detect" to automatically fill your current location
             </p>
           )}
@@ -315,7 +315,7 @@ export default function PostItem() {
 
         {/* Contact Info */}
         <div>
-          <label htmlFor="contact" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="contact" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             Contact Information
           </label>
           <input
@@ -323,14 +323,14 @@ export default function PostItem() {
             type="text"
             value={contactInfo}
             onChange={(e) => setContactInfo(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
             placeholder="Phone number or email"
           />
         </div>
 
         {/* Image Upload */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Image
           </label>
           {imagePreview ? (
@@ -346,16 +346,16 @@ export default function PostItem() {
                   setImageFile(null)
                   setImagePreview(null)
                 }}
-                className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                className="absolute top-2 right-2 bg-red-500 dark:bg-red-600 text-white rounded-full p-1 hover:bg-red-600 dark:hover:bg-red-700"
               >
                 <X size={20} />
               </button>
             </div>
           ) : (
-            <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer hover:bg-gray-50">
+            <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 dark:border-gray-700 border-dashed rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
               <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                <Upload className="w-8 h-8 mb-2 text-gray-400" />
-                <p className="text-sm text-gray-500">Click to upload image</p>
+                <Upload className="w-8 h-8 mb-2 text-gray-400 dark:text-gray-500" />
+                <p className="text-sm text-gray-500 dark:text-gray-400">Click to upload image</p>
               </div>
               <input
                 type="file"
@@ -370,7 +370,7 @@ export default function PostItem() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-blue-600 text-white py-4 rounded-lg active:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium text-lg touch-manipulation min-h-[52px]"
+          className="w-full bg-blue-600 dark:bg-blue-500 text-white py-4 rounded-lg active:bg-blue-700 dark:active:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium text-lg touch-manipulation min-h-[52px]"
         >
           {loading ? 'Posting...' : 'Post Item'}
         </button>
