@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { Item } from '../types/database.types'
-import { Search, MapPin, Calendar, CheckCircle, Bell, RefreshCw } from 'lucide-react'
+import { Search, MapPin, Calendar, CheckCircle, RefreshCw } from 'lucide-react'
 import { categories, ItemType, getCategoryById } from '../lib/categories'
 import VerifiedBadge from '../components/VerifiedBadge'
 

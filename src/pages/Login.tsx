@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { supabase } from '../lib/supabase'
 import { MapPin } from 'lucide-react'
 
 export default function Login() {
+  const { t } = useTranslation()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [isSignUp, setIsSignUp] = useState(false)
@@ -23,7 +25,7 @@ export default function Login() {
           password,
         })
         if (error) throw error
-        alert('Check your email for the confirmation link!')
+        alert(t('login.checkEmail'))
       } else {
         const { error } = await supabase.auth.signInWithPassword({
           email,
@@ -46,13 +48,13 @@ export default function Login() {
         <div className="flex flex-col items-center mb-8">
           <div className="flex items-center gap-3 mb-2">
             <MapPin className="text-blue-600 dark:text-blue-400" size={40} />
-            <h1 className="text-4xl font-bold text-blue-600 dark:text-blue-400">Fynd</h1>
+            <h1 className="text-4xl font-bold text-blue-600 dark:text-blue-400">{t('app.name')}</h1>
           </div>
-          <p className="text-sm text-gray-500 dark:text-gray-400">Lost & Found</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400">{t('app.tagline')}</p>
         </div>
 
         <h2 className="text-2xl font-bold text-center mb-6 text-gray-900 dark:text-gray-100">
-          {isSignUp ? 'Create Account' : 'Login'}
+          {isSignUp ? t('login.createAccount') : t('login.title')}
         </h2>
 
         {error && (
@@ -64,7 +66,7 @@ export default function Login() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Email
+              {t('login.email')}
             </label>
             <input
               id="email"
@@ -79,7 +81,7 @@ export default function Login() {
 
           <div>
             <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Password
+              {t('login.password')}
             </label>
             <input
               id="password"
@@ -98,7 +100,7 @@ export default function Login() {
             disabled={loading}
             className="w-full bg-blue-600 dark:bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {loading ? 'Loading...' : isSignUp ? 'Sign Up' : 'Login'}
+            {loading ? t('common.loading') : isSignUp ? t('login.signUp') : t('login.signIn')}
           </button>
         </form>
 
@@ -108,8 +110,8 @@ export default function Login() {
             className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm"
           >
             {isSignUp
-              ? 'Already have an account? Login'
-              : "Don't have an account? Sign up"}
+              ? t('login.alreadyHaveAccount')
+              : t('login.noAccount')}
           </button>
         </div>
       </div>

@@ -3,6 +3,7 @@ import { User } from '@supabase/supabase-js'
 import { Plus, LogOut, Moon, Sun, MapPin } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useTheme } from '../contexts/ThemeContext'
+import { useTranslation } from 'react-i18next'
 
 interface NavbarProps {
   user: User | null
@@ -10,9 +11,17 @@ interface NavbarProps {
 
 export default function Navbar({ user }: NavbarProps) {
   const { theme, toggleTheme } = useTheme()
+  const { t, i18n } = useTranslation()
   
   const handleLogout = async () => {
     await supabase.auth.signOut()
+  }
+
+  const toggleLanguage = () => {
+    const newLang = i18n.language === 'he' ? 'en' : 'he'
+    i18n.changeLanguage(newLang)
+    document.documentElement.dir = newLang === 'he' ? 'rtl' : 'ltr'
+    document.documentElement.lang = newLang
   }
 
   return (
@@ -25,6 +34,16 @@ export default function Navbar({ user }: NavbarProps) {
           </Link>
           
           <div className="flex items-center gap-4">
+            {/* Language Toggle */}
+            <button
+              onClick={toggleLanguage}
+              className="p-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+              aria-label="Toggle language"
+              title={i18n.language === 'he' ? 'Switch to English' : 'עברית'}
+            >
+              <span className="text-sm font-medium">{i18n.language === 'he' ? 'EN' : 'עב'}</span>
+            </button>
+
             {/* Dark Mode Toggle */}
             <button
               onClick={toggleTheme}
@@ -41,7 +60,7 @@ export default function Navbar({ user }: NavbarProps) {
                   className="flex items-center gap-2 px-4 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors"
                 >
                   <Plus size={20} />
-                  <span className="hidden sm:inline">Post Item</span>
+                  <span className="hidden sm:inline">{t('nav.postItem')}</span>
                 </Link>
                 <button
                   onClick={handleLogout}
@@ -56,7 +75,7 @@ export default function Navbar({ user }: NavbarProps) {
                 to="/login"
                 className="px-4 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors"
               >
-                Login
+                {t('nav.login')}
               </Link>
             )}
           </div>

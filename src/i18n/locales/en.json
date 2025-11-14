@@ -1,0 +1,106 @@
+{
+  "app": {
+    "name": "Fynd",
+    "tagline": "Lost & Found"
+  },
+  "nav": {
+    "postItem": "Post Item",
+    "login": "Login",
+    "logout": "Logout"
+  },
+  "home": {
+    "title": "Lost & Found",
+    "searchPlaceholder": "Search items...",
+    "filterAll": "All",
+    "filterLost": "Lost",
+    "filterFound": "Found",
+    "filterCategory": "Filter by Category:",
+    "allCategories": "All Categories",
+    "noItems": "No items found",
+    "refreshItems": "Refresh Items",
+    "loading": "Loading items..."
+  },
+  "login": {
+    "title": "Login",
+    "createAccount": "Create Account",
+    "email": "Email",
+    "password": "Password",
+    "signUp": "Sign Up",
+    "signIn": "Login",
+    "alreadyHaveAccount": "Already have an account? Login",
+    "noAccount": "Don't have an account? Sign up",
+    "checkEmail": "Check your email for the confirmation link!"
+  },
+  "postItem": {
+    "title": "Post a {{type}} Item",
+    "type": "Type",
+    "lost": "Lost",
+    "found": "Found",
+    "itemCategory": "Item Category",
+    "titleLabel": "Title",
+    "titlePlaceholder": "e.g., Lost iPhone 13 Pro",
+    "description": "Description",
+    "descriptionPlaceholder": "Describe the item in detail...",
+    "location": "Location",
+    "locationHint": "(Auto-detect available)",
+    "locationPlaceholder": "e.g., Central Park, New York",
+    "locationDetectPlaceholder": "e.g., Central Park, New York (or click detect)",
+    "detect": "Detect",
+    "detecting": "Detecting...",
+    "locationTip": "💡 Tip: Click \"Detect\" to automatically fill your current location",
+    "contact": "Contact Information",
+    "contactPlaceholder": "Phone number or email",
+    "image": "Image",
+    "uploadImage": "Click to upload image",
+    "postItem": "Post Item",
+    "posting": "Posting..."
+  },
+  "itemDetail": {
+    "back": "Back",
+    "contact": "Contact:",
+    "postedOn": "Posted on",
+    "verified": "This item is verified",
+    "verifiedDescription": "Your item has been verified and displays a verified badge.",
+    "verificationPending": "Verification Pending",
+    "verificationPendingDescription": "Your verification request is being reviewed. You'll be notified once it's processed.",
+    "requestVerification": "Request Verification",
+    "claims": "Claims",
+    "markResolved": "Mark as Resolved",
+    "noClaims": "No claims yet",
+    "claimItem": "Claim This Item",
+    "claimMessage": "Optional: Add a message to the owner...",
+    "submitClaim": "Submit Claim",
+    "submitting": "Submitting...",
+    "cancel": "Cancel",
+    "alreadyClaimed": "You have already claimed this item",
+    "wantToClaim": "Want to claim this item?",
+    "loginToClaim": "Login to Claim",
+    "youClaimed": "You have claimed this item",
+    "waitingResponse": "Waiting for owner's response...",
+    "resolved": "This item has been resolved",
+    "status": {
+      "resolved": "Resolved",
+      "claimApproved": "Claim Approved"
+    }
+  },
+  "categories": {
+    "electronics": "Electronics",
+    "clothing": "Clothing",
+    "keys": "Keys",
+    "pets": "Pets",
+    "jewelry": "Jewelry",
+    "books": "Books",
+    "wallet": "Wallet/Purse",
+    "accessories": "Accessories",
+    "vehicles": "Vehicles",
+    "sports": "Sports Equipment",
+    "toys": "Toys & Games",
+    "other": "Other"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success"
+  }
+}
+

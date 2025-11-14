@@ -13,6 +13,15 @@ body {
   -webkit-text-size-adjust: 100%;
 }
 
+/* RTL Support */
+[dir="rtl"] {
+  direction: rtl;
+}
+
+[dir="ltr"] {
+  direction: ltr;
+}
+
 #root {
   min-height: 100vh;
 }

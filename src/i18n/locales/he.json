@@ -1,0 +1,106 @@
+{
+  "app": {
+    "name": "Fynd",
+    "tagline": "אבידה ומציאה"
+  },
+  "nav": {
+    "postItem": "פרסם פריט",
+    "login": "התחבר",
+    "logout": "התנתק"
+  },
+  "home": {
+    "title": "אבידה ומציאה",
+    "searchPlaceholder": "חפש פריטים...",
+    "filterAll": "הכל",
+    "filterLost": "אבוד",
+    "filterFound": "נמצא",
+    "filterCategory": "סנן לפי קטגוריה:",
+    "allCategories": "כל הקטגוריות",
+    "noItems": "לא נמצאו פריטים",
+    "refreshItems": "רענן פריטים",
+    "loading": "טוען פריטים..."
+  },
+  "login": {
+    "title": "התחברות",
+    "createAccount": "צור חשבון",
+    "email": "אימייל",
+    "password": "סיסמה",
+    "signUp": "הירשם",
+    "signIn": "התחבר",
+    "alreadyHaveAccount": "כבר יש לך חשבון? התחבר",
+    "noAccount": "אין לך חשבון? הירשם",
+    "checkEmail": "בדוק את האימייל שלך לקבלת קישור האישור!"
+  },
+  "postItem": {
+    "title": "פרסם פריט {{type}}",
+    "type": "סוג",
+    "lost": "אבוד",
+    "found": "נמצא",
+    "itemCategory": "קטגוריית פריט",
+    "titleLabel": "כותרת",
+    "titlePlaceholder": "לדוגמה: אייפון 13 פרו אבוד",
+    "description": "תיאור",
+    "descriptionPlaceholder": "תאר את הפריט בפירוט...",
+    "location": "מיקום",
+    "locationHint": "(זיהוי אוטומטי זמין)",
+    "locationPlaceholder": "לדוגמה: פארק סנטרל, ניו יורק",
+    "locationDetectPlaceholder": "לדוגמה: פארק סנטרל, ניו יורק (או לחץ על זיהוי)",
+    "detect": "זהה",
+    "detecting": "מזהה...",
+    "locationTip": "💡 טיפ: לחץ על \"זהה\" כדי למלא אוטומטית את המיקום הנוכחי שלך",
+    "contact": "פרטי יצירת קשר",
+    "contactPlaceholder": "מספר טלפון או אימייל",
+    "image": "תמונה",
+    "uploadImage": "לחץ להעלאת תמונה",
+    "postItem": "פרסם פריט",
+    "posting": "מפרסם..."
+  },
+  "itemDetail": {
+    "back": "חזור",
+    "contact": "יצירת קשר:",
+    "postedOn": "פורסם ב",
+    "verified": "פריט זה מאומת",
+    "verifiedDescription": "הפריט שלך אומת ומוצג עם תג מאומת.",
+    "verificationPending": "אימות ממתין",
+    "verificationPendingDescription": "בקשת האימות שלך נבדקת. תתעדכן ברגע שהיא תטופל.",
+    "requestVerification": "בקש אימות",
+    "claims": "תביעות",
+    "markResolved": "סמן כפתור",
+    "noClaims": "אין עדיין תביעות",
+    "claimItem": "תבע פריט זה",
+    "claimMessage": "אופציונלי: הוסף הודעה לבעלים...",
+    "submitClaim": "שלח תביעה",
+    "submitting": "שולח...",
+    "cancel": "בטל",
+    "alreadyClaimed": "כבר תיבעת פריט זה",
+    "wantToClaim": "רוצה לתבוע פריט זה?",
+    "loginToClaim": "התחבר לתבוע",
+    "youClaimed": "תיבעת פריט זה",
+    "waitingResponse": "ממתין לתגובת הבעלים...",
+    "resolved": "פריט זה נפתר",
+    "status": {
+      "resolved": "נפתר",
+      "claimApproved": "תביעה אושרה"
+    }
+  },
+  "categories": {
+    "electronics": "אלקטרוניקה",
+    "clothing": "ביגוד",
+    "keys": "מפתחות",
+    "pets": "חיות מחמד",
+    "jewelry": "תכשיטים",
+    "books": "ספרים",
+    "wallet": "ארנק/תיק יד",
+    "accessories": "אביזרים",
+    "vehicles": "כלי רכב",
+    "sports": "ציוד ספורט",
+    "toys": "צעצועים ומשחקים",
+    "other": "אחר"
+  },
+  "common": {
+    "loading": "טוען...",
+    "error": "שגיאה",
+    "success": "הצלחה"
+  }
+}
+
