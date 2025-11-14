@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { User } from '@supabase/supabase-js'
-import { Plus, LogOut, Moon, Sun } from 'lucide-react'
+import { Plus, LogOut, Moon, Sun, MapPin } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useTheme } from '../contexts/ThemeContext'
 
@@ -19,24 +19,9 @@ export default function Navbar({ user }: NavbarProps) {
     <nav className="bg-white dark:bg-gray-900 shadow-sm border-b dark:border-gray-800 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          <Link to="/" className="flex items-center">
-            <img 
-              src="/logo.jpg" 
-              alt="Fynd" 
-              className="h-8 sm:h-10 w-auto object-contain"
-              onError={(e) => {
-                // Try alternative formats if logo.jpg fails
-                const img = e.target as HTMLImageElement
-                if (img.src.includes('logo.jpg')) {
-                  img.src = '/logo.jpeg'
-                } else if (img.src.includes('logo.jpeg')) {
-                  img.src = '/logo.png'
-                } else {
-                  // Fallback to text if all image formats fail
-                  img.style.display = 'none'
-                }
-              }}
-            />
+          <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+            <MapPin className="text-blue-600 dark:text-blue-400" size={24} />
+            <h1 className="text-2xl font-bold text-blue-600 dark:text-blue-400">Fynd</h1>
           </Link>
           
           <div className="flex items-center gap-4">

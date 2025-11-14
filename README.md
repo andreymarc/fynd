@@ -18,12 +18,14 @@ A mobile-friendly web application for posting and finding lost items, built with
 - 🔍 Filter by category for better organization and discovery
 - ✅ Item Verification - Verified items badge, photo verification, trust indicators
 - 🛡️ Fraud Prevention - Verification system reduces fraudulent listings
+- ⚡ Real-time Updates - Live feed when new items are posted (disabled by default to avoid costs - can be enabled)
+- 🔄 Manual Refresh - Refresh button to check for new items
 
 ## Tech Stack
 
 - **Frontend**: React 18 + TypeScript + Vite
 - **Styling**: Tailwind CSS
-- **Backend**: Supabase (PostgreSQL + Auth + Storage)
+- **Backend**: Supabase (PostgreSQL + Auth + Storage + Real-time)
 - **Routing**: React Router v6
 - **Icons**: Lucide React
 

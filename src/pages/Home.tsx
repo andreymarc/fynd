@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { Item } from '../types/database.types'
-import { Search, MapPin, Calendar, CheckCircle } from 'lucide-react'
+import { Search, MapPin, Calendar, CheckCircle, Bell, RefreshCw } from 'lucide-react'
 import { categories, ItemType, getCategoryById } from '../lib/categories'
 import VerifiedBadge from '../components/VerifiedBadge'
 
@@ -13,14 +13,92 @@ export default function Home() {
   const [filter, setFilter] = useState<'all' | 'lost' | 'found'>('all')
   const [itemTypeFilter, setItemTypeFilter] = useState<ItemType | 'all'>('all')
   const [claimCounts, setClaimCounts] = useState<Record<string, number>>({})
+  // Real-time notification state (disabled to avoid costs)
+  // const [newItemsCount, setNewItemsCount] = useState(0)
+  // const [showNewItemsNotification, setShowNewItemsNotification] = useState(false)
+  const lastItemIdRef = useRef<string | null>(null)
 
   useEffect(() => {
     fetchItems()
+    
+    // Real-time subscriptions disabled to avoid Supabase costs
+    // To re-enable: Uncomment the code below and enable replication in Supabase dashboard
+    /*
+    // Set up real-time subscription for new items
+    const channel = supabase
+      .channel('items-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'items',
+          filter: `status=eq.active`
+        },
+        (payload) => {
+          const newItem = payload.new as Item
+          
+          // Check if item matches current filters
+          const matchesFilter = filter === 'all' || newItem.category === filter
+          const matchesTypeFilter = itemTypeFilter === 'all' || newItem.item_type === itemTypeFilter
+          
+          if (matchesFilter && matchesTypeFilter) {
+            // Add new item to the top of the list
+            setItems(prev => {
+              // Check if item already exists (prevent duplicates)
+              if (prev.some(item => item.id === newItem.id)) {
+                return prev
+              }
+              return [newItem, ...prev]
+            })
+            
+            // Show notification
+            setNewItemsCount(prev => prev + 1)
+            setShowNewItemsNotification(true)
+            
+            // Auto-hide notification after 5 seconds
+            setTimeout(() => {
+              setShowNewItemsNotification(false)
+            }, 5000)
+          }
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'items'
+        },
+        (payload) => {
+          const updatedItem = payload.new as Item
+          
+          // Update item in the list if it exists
+          setItems(prev => 
+            prev.map(item => item.id === updatedItem.id ? updatedItem : item)
+          )
+          
+          // If item status changed to resolved, remove it
+          if (updatedItem.status === 'resolved') {
+            setItems(prev => prev.filter(item => item.id !== updatedItem.id))
+          }
+        }
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+    */
   }, [filter, itemTypeFilter])
 
   useEffect(() => {
     if (items.length > 0) {
       fetchClaimCounts()
+      // Track the most recent item ID
+      if (!lastItemIdRef.current && items.length > 0) {
+        lastItemIdRef.current = items[0].id
+      }
     }
   }, [items])
 
@@ -45,6 +123,11 @@ export default function Home() {
 
       if (error) throw error
       setItems(data || [])
+      
+      // Track the most recent item ID after initial load (for future real-time use)
+      if (data && data.length > 0 && !lastItemIdRef.current) {
+        lastItemIdRef.current = data[0].id
+      }
     } catch (error) {
       console.error('Error fetching items:', error)
     } finally {
@@ -86,8 +169,28 @@ export default function Home() {
     )
   }
 
+  const handleRefresh = () => {
+    // Reset the last item ID
+    if (items.length > 0) {
+      lastItemIdRef.current = items[0].id
+    }
+    fetchItems()
+  }
+
   return (
     <div className="max-w-7xl mx-auto px-4 py-6 sm:py-8">
+      {/* Manual Refresh Button - Real-time disabled to avoid Supabase costs */}
+      <div className="mb-4 flex justify-end">
+        <button
+          onClick={handleRefresh}
+          className="px-4 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors text-sm font-medium flex items-center gap-2"
+          title="Refresh to see new items"
+        >
+          <RefreshCw size={16} />
+          Refresh Items
+        </button>
+      </div>
+
       {/* Search and Filter */}
       <div className="mb-6 space-y-4">
         <div className="relative">

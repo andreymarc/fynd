@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
+import { MapPin } from 'lucide-react'
 
 export default function Login() {
   const [email, setEmail] = useState('')
@@ -41,6 +42,15 @@ export default function Login() {
   return (
     <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center px-4">
       <div className="max-w-md w-full bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 border border-gray-200 dark:border-gray-700">
+        {/* Logo */}
+        <div className="flex flex-col items-center mb-8">
+          <div className="flex items-center gap-3 mb-2">
+            <MapPin className="text-blue-600 dark:text-blue-400" size={40} />
+            <h1 className="text-4xl font-bold text-blue-600 dark:text-blue-400">Fynd</h1>
+          </div>
+          <p className="text-sm text-gray-500 dark:text-gray-400">Lost & Found</p>
+        </div>
+
         <h2 className="text-2xl font-bold text-center mb-6 text-gray-900 dark:text-gray-100">
           {isSignUp ? 'Create Account' : 'Login'}
         </h2>

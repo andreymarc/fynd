@@ -24,6 +24,53 @@ export default function ItemDetail() {
     fetchItem()
     fetchUser()
     fetchClaims()
+
+    // Real-time subscriptions disabled to avoid Supabase costs
+    // To re-enable: Uncomment the code below and enable replication in Supabase dashboard
+    /*
+    if (!id) return
+
+    // Set up real-time subscription for claims
+    const claimsChannel = supabase
+      .channel(`item-claims-${id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'claims',
+          filter: `item_id=eq.${id}`
+        },
+        () => {
+          // Refresh claims when any change occurs
+          fetchClaims()
+        }
+      )
+      .subscribe()
+
+    // Set up real-time subscription for item updates
+    const itemChannel = supabase
+      .channel(`item-updates-${id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'items',
+          filter: `id=eq.${id}`
+        },
+        (payload) => {
+          const updatedItem = payload.new as Item
+          setItem(updatedItem)
+        }
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(claimsChannel)
+      supabase.removeChannel(itemChannel)
+    }
+    */
   }, [id])
 
   const fetchItem = async () => {
