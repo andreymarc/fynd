@@ -20,6 +20,8 @@ A mobile-friendly web application for posting and finding lost items, built with
 - 🛡️ Fraud Prevention - Verification system reduces fraudulent listings
 - ⚡ Real-time Updates - Live feed when new items are posted (disabled by default to avoid costs - can be enabled)
 - 🔄 Manual Refresh - Refresh button to check for new items
+- 💬 Direct Messaging - Private chat between item owners and claimers
+- 📨 Message Notifications - Unread message counts and read receipts
 
 ## Tech Stack
 
@@ -129,6 +131,44 @@ CREATE POLICY "Item owners can update claims"
 CREATE POLICY "Users can delete their own claims"
   ON claims FOR DELETE
   USING (auth.uid() = claimed_by_user_id);
+
+-- Create messages table
+CREATE TABLE messages (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  item_id UUID NOT NULL REFERENCES items(id) ON DELETE CASCADE,
+  sender_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  receiver_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  message TEXT NOT NULL,
+  read BOOLEAN DEFAULT false,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
+);
+
+CREATE INDEX idx_messages_item_id ON messages(item_id);
+CREATE INDEX idx_messages_sender_receiver ON messages(sender_id, receiver_id);
+CREATE INDEX idx_messages_created_at ON messages(created_at DESC);
+
+ALTER TABLE messages ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can view their own messages"
+  ON messages FOR SELECT
+  USING (
+    auth.uid() = sender_id OR
+    auth.uid() = receiver_id
+  );
+
+CREATE POLICY "Users can send messages"
+  ON messages FOR INSERT
+  WITH CHECK (auth.uid() = sender_id);
+
+CREATE POLICY "Users can update their own messages"
+  ON messages FOR UPDATE
+  USING (auth.uid() = sender_id);
+
+CREATE POLICY "Users can mark received messages as read"
+  ON messages FOR UPDATE
+  USING (auth.uid() = receiver_id)
+  WITH CHECK (auth.uid() = receiver_id);
 
 -- Create storage bucket for images
 INSERT INTO storage.buckets (id, name, public) VALUES ('item-images', 'item-images', true);

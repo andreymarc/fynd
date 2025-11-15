@@ -130,6 +130,16 @@
     "submitted": "Verification request submitted! It will be reviewed shortly.",
     "maxPhotos": "Maximum 5 photos allowed",
     "minPhotos": "Please upload at least 2 verification photos"
+  },
+  "messaging": {
+    "messages": "Messages",
+    "noMessages": "No messages yet. Start the conversation!",
+    "typeMessage": "Type a message...",
+    "sendError": "Failed to send message: ",
+    "message": "Message",
+    "messageOwner": "Message Owner",
+    "close": "Close",
+    "user": "User"
   }
 }
 

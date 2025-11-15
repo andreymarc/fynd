@@ -52,3 +52,22 @@ export interface Verification {
   updated_at: string
 }
 
+export interface Message {
+  id: string
+  item_id: string
+  sender_id: string
+  receiver_id: string
+  message: string
+  read: boolean
+  created_at: string
+  updated_at: string
+  sender?: {
+    email: string
+    full_name?: string
+  }
+  receiver?: {
+    email: string
+    full_name?: string
+  }
+}
+

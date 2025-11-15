@@ -8,6 +8,7 @@ import { getCategoryById, ItemType } from '../lib/categories'
 import VerifiedBadge from '../components/VerifiedBadge'
 import TrustIndicators from '../components/TrustIndicators'
 import VerificationRequest from '../components/VerificationRequest'
+import Messaging from '../components/Messaging'
 
 export default function ItemDetail() {
   const { t } = useTranslation()
@@ -21,6 +22,8 @@ export default function ItemDetail() {
   const [showClaimForm, setShowClaimForm] = useState(false)
   const [claiming, setClaiming] = useState(false)
   const [showVerificationForm, setShowVerificationForm] = useState(false)
+  const [showMessaging, setShowMessaging] = useState(false)
+  const [messagingWithUserId, setMessagingWithUserId] = useState<string | null>(null)
 
   useEffect(() => {
     fetchItem()
@@ -224,6 +227,7 @@ export default function ItemDetail() {
   const hasClaimed = user && claims.some(c => c.claimed_by_user_id === user.id)
   const pendingClaims = claims.filter(c => c.status === 'pending')
   const approvedClaim = claims.find(c => c.status === 'approved')
+  const canMessage = user && item.status === 'active' && (isOwner || hasClaimed)
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-6 sm:py-8">
@@ -495,13 +499,58 @@ export default function ItemDetail() {
                   </Link>
                 </div>
               ) : (
-                <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
-                  <p className="text-blue-800 dark:text-blue-300 font-medium">{t('itemDetail.youClaimed')}</p>
-                  <p className="text-sm text-blue-600 dark:text-blue-400 mt-1">
-                    {t('itemDetail.waitingResponse')}
-                  </p>
+                <div className="space-y-3">
+                  <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                    <p className="text-blue-800 dark:text-blue-300 font-medium">{t('itemDetail.youClaimed')}</p>
+                    <p className="text-sm text-blue-600 dark:text-blue-400 mt-1">
+                      {t('itemDetail.waitingResponse')}
+                    </p>
+                  </div>
+                  {!showMessaging && (
+                    <button
+                      onClick={() => {
+                        setMessagingWithUserId(item.user_id)
+                        setShowMessaging(true)
+                      }}
+                      className="w-full px-4 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors flex items-center justify-center gap-2"
+                    >
+                      <MessageSquare size={20} />
+                      {t('messaging.messageOwner', 'Message Owner')}
+                    </button>
+                  )}
                 </div>
               )}
+            </div>
+          )}
+
+          {/* Messaging Section */}
+          {canMessage && showMessaging && messagingWithUserId && (
+            <div className="pt-6 border-t border-gray-200 dark:border-gray-700">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                  {t('messaging.messages', 'Messages')}
+                </h3>
+                <button
+                  onClick={() => {
+                    setShowMessaging(false)
+                    setMessagingWithUserId(null)
+                  }}
+                  className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+                >
+                  {t('messaging.close', 'Close')}
+                </button>
+              </div>
+              <Messaging
+                itemId={item.id}
+                itemOwnerId={item.user_id}
+                currentUserId={user.id}
+                otherUserId={messagingWithUserId}
+                otherUserEmail={
+                  isOwner
+                    ? claims.find(c => c.claimed_by_user_id === messagingWithUserId)?.claimed_by?.email
+                    : undefined
+                }
+              />
             </div>
           )}
 
