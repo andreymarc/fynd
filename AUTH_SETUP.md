@@ -38,10 +38,11 @@ This guide will help you configure Supabase authentication for production use be
 ### 1.3 Configure Site URL
 
 1. Go to **Authentication** → **URL Configuration**
-2. Set **Site URL** to your production domain (e.g., `https://your-app.netlify.app`)
+2. Set **Site URL** to your production domain: `https://fyndit.netlify.app`
 3. Add your production domain to **Redirect URLs**:
-   - `https://your-app.netlify.app/**`
-   - `https://your-app.netlify.app/?type=recovery&token=reset`
+   - `https://fyndit.netlify.app/**`
+   - `https://fyndit.netlify.app/?type=recovery&token=reset`
+   - `https://fyndit.netlify.app/`
 
 ### 1.4 Password Requirements (Optional)
 
@@ -100,8 +101,9 @@ VITE_SUPABASE_ANON_KEY=your-anon-key-here
 1. In Supabase dashboard, go to **Authentication** → **URL Configuration**
 2. Add your Netlify domain to **Redirect URLs**:
    ```
-   https://your-app.netlify.app/**
-   https://your-app.netlify.app/?type=recovery&token=reset
+   https://fyndit.netlify.app/**
+   https://fyndit.netlify.app/?type=recovery&token=reset
+   https://fyndit.netlify.app/
    ```
 
 ### 3.3 Update Site URL
@@ -109,8 +111,10 @@ VITE_SUPABASE_ANON_KEY=your-anon-key-here
 Set the **Site URL** in Supabase to your production domain:
 
 ```
-https://your-app.netlify.app
+https://fyndit.netlify.app
 ```
+
+**Note:** See `EMAIL_TEMPLATES_SETUP.md` for detailed email template configuration instructions.
 
 ## Step 4: Security Best Practices
 

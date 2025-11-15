@@ -15,6 +15,7 @@ export default function PostItem() {
   const [location, setLocation] = useState('')
   const [locationLat, setLocationLat] = useState<number | null>(null)
   const [locationLon, setLocationLon] = useState<number | null>(null)
+  const [locationAccuracy, setLocationAccuracy] = useState<number | null>(null)
   const [contactInfo, setContactInfo] = useState('')
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
@@ -47,11 +48,12 @@ export default function PostItem() {
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         try {
-          const { latitude, longitude } = position.coords
+          const { latitude, longitude, accuracy } = position.coords
           const address = await reverseGeocode(latitude, longitude)
           setLocation(address)
           setLocationLat(latitude)
           setLocationLon(longitude)
+          setLocationAccuracy(accuracy) // Store accuracy in meters
         } catch (error: any) {
           setError('Failed to get location address: ' + error.message)
         } finally {
@@ -273,7 +275,13 @@ export default function PostItem() {
               id="location"
               type="text"
               value={location}
-              onChange={(e) => setLocation(e.target.value)}
+              onChange={(e) => {
+                setLocation(e.target.value)
+                // Clear accuracy when manually editing
+                if (locationAccuracy !== null) {
+                  setLocationAccuracy(null)
+                }
+              }}
               className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
               placeholder={category === 'found' ? t('postItem.locationDetectPlaceholder') : t('postItem.locationPlaceholder')}
             />
@@ -300,6 +308,16 @@ export default function PostItem() {
           {category === 'found' && !location && (
             <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
               {t('postItem.locationTip')}
+            </p>
+          )}
+          {location && locationAccuracy !== null && (
+            <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+              {locationAccuracy <= 10 
+                ? `📍 Very precise (within ${Math.round(locationAccuracy)}m)`
+                : locationAccuracy <= 50
+                ? `📍 Good precision (within ${Math.round(locationAccuracy)}m)`
+                : `📍 Approximate location (within ${Math.round(locationAccuracy)}m)`
+              }
             </p>
           )}
         </div>

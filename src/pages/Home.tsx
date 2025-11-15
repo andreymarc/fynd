@@ -391,7 +391,7 @@ export default function Home() {
                     }`}
                   >
                     <Icon size={18} />
-                    <span className="whitespace-nowrap">{cat.name}</span>
+                    <span className="whitespace-nowrap">{t(`categories.${cat.id}`)}</span>
                   </button>
                 )
               })}
