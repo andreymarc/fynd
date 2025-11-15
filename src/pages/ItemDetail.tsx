@@ -9,6 +9,7 @@ import VerifiedBadge from '../components/VerifiedBadge'
 import TrustIndicators from '../components/TrustIndicators'
 import VerificationRequest from '../components/VerificationRequest'
 import Messaging from '../components/Messaging'
+import MatchList from '../components/MatchList'
 import { notifyItemOwnerOfClaim, notifyClaimerOfApproval, notifyClaimerOfRejection, notifyClaimerOfResolution } from '../lib/notifications'
 
 export default function ItemDetail() {
@@ -391,6 +392,16 @@ export default function ItemDetail() {
                   )}
                 </div>
               )}
+            </div>
+          )}
+
+          {/* Smart Matches Section */}
+          {item.status === 'active' && user && (
+            <div className="pt-6 border-t border-gray-200 dark:border-gray-700">
+              <MatchList 
+                itemId={item.id} 
+                itemCategory={item.category}
+              />
             </div>
           )}
 

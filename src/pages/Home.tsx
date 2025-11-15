@@ -6,6 +6,7 @@ import { Item } from '../types/database.types'
 import { Search, MapPin, CheckCircle, RefreshCw, Map, List, Heart, Share2, Clock, Navigation } from 'lucide-react'
 import { categories, ItemType, getCategoryById } from '../lib/categories'
 import VerifiedBadge from '../components/VerifiedBadge'
+import MatchBadge from '../components/MatchBadge'
 import MapView from '../components/MapView'
 import { calculateDistance, formatDistance, getTimeAgo, shareItem } from '../lib/utils'
 
@@ -20,6 +21,7 @@ export default function Home() {
   const [viewMode, setViewMode] = useState<'list' | 'map'>('list')
   const [favorites, setFavorites] = useState<Set<string>>(new Set())
   const [userLocation, setUserLocation] = useState<{ lat: number; lon: number } | null>(null)
+  const [matchScores, setMatchScores] = useState<Record<string, { score: number; reasons: string[] }>>({})
   // Real-time notification state (disabled to avoid costs)
   // const [newItemsCount, setNewItemsCount] = useState(0)
   // const [showNewItemsNotification, setShowNewItemsNotification] = useState(false)
@@ -208,6 +210,53 @@ export default function Home() {
     }
   }
 
+  const fetchMatchScores = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+
+      const itemIds = items.map(item => item.id)
+      if (itemIds.length === 0) return
+
+      // Get matches where user's items are involved
+      const { data, error } = await supabase
+        .from('matches')
+        .select('lost_item_id, found_item_id, match_score, match_reasons')
+        .or(`lost_item_id.in.(${itemIds.join(',')}),found_item_id.in.(${itemIds.join(',')})`)
+        .gte('match_score', 30)
+        .order('match_score', { ascending: false })
+
+      if (error) throw error
+
+      const scores: Record<string, { score: number; reasons: string[] }> = {}
+      data?.forEach(match => {
+        // Store match score for both items
+        if (itemIds.includes(match.lost_item_id)) {
+          scores[match.lost_item_id] = {
+            score: match.match_score,
+            reasons: match.match_reasons || []
+          }
+        }
+        if (itemIds.includes(match.found_item_id)) {
+          scores[match.found_item_id] = {
+            score: match.match_score,
+            reasons: match.match_reasons || []
+          }
+        }
+      })
+      setMatchScores(scores)
+    } catch (error) {
+      console.error('Error fetching match scores:', error)
+    }
+  }
+
+  useEffect(() => {
+    if (items.length > 0) {
+      fetchClaimCounts()
+      fetchMatchScores()
+    }
+  }, [items])
+
   const filteredItems = items.filter((item) =>
     item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     item.description?.toLowerCase().includes(searchTerm.toLowerCase())
@@ -387,7 +436,14 @@ export default function Home() {
                             alt={item.title}
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
                           />
-                          <div className="absolute top-2 right-2 flex gap-2">
+                          <div className="absolute top-2 right-2 flex gap-2 flex-wrap justify-end">
+                            {matchScores[item.id] && matchScores[item.id].score >= 50 && (
+                              <MatchBadge 
+                                score={Math.round(matchScores[item.id].score)} 
+                                reasons={matchScores[item.id].reasons}
+                                size="sm"
+                              />
+                            )}
                             <VerifiedBadge 
                               verified={item.verified || false} 
                               verificationStatus={item.verification_status}

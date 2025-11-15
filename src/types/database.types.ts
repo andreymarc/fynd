@@ -62,6 +62,19 @@ export interface Notification {
   created_at: string
 }
 
+export interface Match {
+  id: string
+  lost_item_id: string
+  found_item_id: string
+  match_score: number
+  match_reasons: string[]
+  status: 'pending' | 'viewed' | 'contacted' | 'dismissed'
+  created_at: string
+  updated_at: string
+  lost_item?: Item
+  found_item?: Item
+}
+
 export interface Verification {
   id: string
   item_id: string

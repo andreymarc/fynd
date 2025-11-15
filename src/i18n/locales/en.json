@@ -177,6 +177,18 @@
     "minutesAgo": "min ago",
     "hoursAgo": "h ago",
     "daysAgo": "d ago"
+  },
+  "matching": {
+    "possibleMatches": "Possible Matches",
+    "noMatches": "No potential matches found yet.",
+    "loading": "Loading matches...",
+    "matchScore": "Match Score",
+    "viewItem": "View",
+    "dismiss": "Dismiss",
+    "reasonCategory": "Category",
+    "reasonKeywords": "Keywords",
+    "reasonLocation": "Location",
+    "reasonDate": "Date"
   }
 }
 

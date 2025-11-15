@@ -3,6 +3,7 @@
 ## Prerequisites
 
 1. **Run Migrations** (if not already done):
+
    - Go to Supabase Dashboard → SQL Editor
    - Run `migrations/add_profiles.sql`
    - Run `migrations/add_notifications.sql`
@@ -16,6 +17,7 @@
 ## Testing User Profiles
 
 ### 1. Check Profile Creation
+
 - **Sign up** with a new account (or use existing)
 - Profile should be **automatically created** on signup
 - Go to `/profile` or click the **profile icon** in the navbar
@@ -25,6 +27,7 @@
   - Edit button
 
 ### 2. Edit Profile
+
 - Click the **Edit** button (pencil icon)
 - Fill in:
   - Full Name
@@ -35,6 +38,7 @@
 - Profile should update immediately
 
 ### 3. Check Profile Stats
+
 - Post a few items (go to `/post`)
 - Claim some items from another account
 - Go back to `/profile`
@@ -57,12 +61,14 @@ You'll need **two different accounts** to test messaging:
 ### Test Flow:
 
 #### Step 1: Owner Posts Item
+
 1. Login as **Account 1**
 2. Go to `/post`
 3. Post a "Found" item (e.g., "Lost iPhone")
 4. Note the item ID from the URL
 
 #### Step 2: Claimer Claims Item
+
 1. **Logout** and login as **Account 2**
 2. Go to the item detail page (`/item/[id]`)
 3. Click **"Claim This Item"**
@@ -71,6 +77,7 @@ You'll need **two different accounts** to test messaging:
 6. ✅ **Owner should receive a notification** (bell icon)
 
 #### Step 3: Owner Views Claim & Messages
+
 1. **Logout** and login back as **Account 1** (owner)
 2. Go to the item detail page
 3. You should see:
@@ -80,6 +87,7 @@ You'll need **two different accounts** to test messaging:
 5. Messaging interface should appear
 
 #### Step 4: Test Messaging
+
 1. **Owner** sends a message: "Hi, can you describe the item?"
 2. **Logout** and login as **Account 2** (claimer)
 3. Go to the item detail page
@@ -94,6 +102,7 @@ You'll need **two different accounts** to test messaging:
 9. You should see both messages in the conversation
 
 #### Step 5: Test Notifications
+
 1. When **Claimer** sends a message, **Owner** should get a notification
 2. Check the **bell icon** in navbar
 3. Click the bell → Should see "New Message" notification
@@ -105,21 +114,26 @@ You'll need **two different accounts** to test messaging:
 ### Notification Types to Test:
 
 1. **Claim Notification**:
+
    - Claimer claims item → Owner gets notification ✅
 
 2. **Claim Approved**:
+
    - Owner approves claim → Claimer gets notification ✅
 
 3. **Claim Rejected**:
+
    - Owner rejects claim → Claimer gets notification ✅
 
 4. **New Message**:
+
    - User sends message → Receiver gets notification ✅
 
 5. **Item Resolved**:
    - Owner marks item as resolved → Approved claimers get notification ✅
 
 ### Check Notification Center:
+
 - Click **bell icon** in navbar
 - Should see dropdown with notifications
 - Unread count badge should show number
@@ -146,22 +160,26 @@ You'll need **two different accounts** to test messaging:
 ## Troubleshooting
 
 ### Profile Not Showing:
+
 - Check if `profiles` table exists in Supabase
 - Check if trigger `on_auth_user_created` exists
 - Manually create profile: Insert into `profiles` table with your user ID
 
 ### Messages Not Sending:
+
 - Check if `messages` table exists
 - Check RLS policies are set correctly
 - Check browser console for errors
 
 ### Notifications Not Appearing:
+
 - Check if `notifications` table exists
 - Check RLS policies
 - Check browser console for errors
 - Notifications poll every 10 seconds, wait a bit
 
 ### Can't See Other User's Profile:
+
 - Profiles are public, should be visible
 - Check RLS policy: "Anyone can view profiles"
 
@@ -188,5 +206,4 @@ SELECT * FROM claims ORDER BY created_at DESC LIMIT 10;
 ✅ **Profiles**: Auto-created on signup, editable, shows stats  
 ✅ **Messaging**: Works between owners and claimers, real-time updates  
 ✅ **Notifications**: Appear for all important events, clickable links  
-✅ **Mobile**: All features work on mobile devices  
-
+✅ **Mobile**: All features work on mobile devices

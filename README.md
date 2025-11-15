@@ -24,6 +24,7 @@ A mobile-friendly web application for posting and finding lost items, built with
 - 📨 Message Notifications - Unread message counts and read receipts
 - 👤 User Profiles - Public profiles with stats, success rate, and trust indicators
 - 🔔 Notifications System - In-app notifications for claims, messages, and item updates
+- 🎯 Smart Matching - Auto-suggest matches between lost and found items based on category, keywords, location, and date
 
 ## Tech Stack
 
@@ -285,6 +286,7 @@ Additional database migrations are available in the `migrations/` folder:
 - `add_profiles.sql` - Creates user profiles table with auto-creation trigger
 - `add_notifications.sql` - Creates notifications system with helper functions
 - `add_messaging.sql` - Creates messaging table for direct communication
+- `add_smart_matching.sql` - Creates smart matching system with automatic match calculation
 
 Run these migrations in your Supabase SQL Editor after setting up the base tables.
 

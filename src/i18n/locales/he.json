@@ -177,5 +177,17 @@
     "minutesAgo": "דקות לפני",
     "hoursAgo": "שעות לפני",
     "daysAgo": "ימים לפני"
+  },
+  "matching": {
+    "possibleMatches": "התאמות אפשריות",
+    "noMatches": "לא נמצאו התאמות אפשריות עדיין.",
+    "loading": "טוען התאמות...",
+    "matchScore": "ציון התאמה",
+    "viewItem": "צפה",
+    "dismiss": "התעלם",
+    "reasonCategory": "קטגוריה",
+    "reasonKeywords": "מילות מפתח",
+    "reasonLocation": "מיקום",
+    "reasonDate": "תאריך"
   }
 }
