@@ -21,8 +21,9 @@ CREATE INDEX IF NOT EXISTS idx_messages_created_at ON messages(created_at DESC);
 -- Enable Row Level Security
 ALTER TABLE messages ENABLE ROW LEVEL SECURITY;
 
--- RLS Policies
+-- RLS Policies (drop if exists to make migration idempotent)
 -- Users can view messages where they are sender or receiver
+DROP POLICY IF EXISTS "Users can view their own messages" ON messages;
 CREATE POLICY "Users can view their own messages"
   ON messages FOR SELECT
   USING (
@@ -31,16 +32,19 @@ CREATE POLICY "Users can view their own messages"
   );
 
 -- Users can send messages
+DROP POLICY IF EXISTS "Users can send messages" ON messages;
 CREATE POLICY "Users can send messages"
   ON messages FOR INSERT
   WITH CHECK (auth.uid() = sender_id);
 
 -- Users can update their own sent messages (for editing/deleting)
+DROP POLICY IF EXISTS "Users can update their own messages" ON messages;
 CREATE POLICY "Users can update their own messages"
   ON messages FOR UPDATE
   USING (auth.uid() = sender_id);
 
 -- Users can mark messages as read if they are the receiver
+DROP POLICY IF EXISTS "Users can mark received messages as read" ON messages;
 CREATE POLICY "Users can mark received messages as read"
   ON messages FOR UPDATE
   USING (auth.uid() = receiver_id)
@@ -56,6 +60,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Trigger to auto-update updated_at
+DROP TRIGGER IF EXISTS update_messages_updated_at ON messages;
 CREATE TRIGGER update_messages_updated_at
   BEFORE UPDATE ON messages
   FOR EACH ROW

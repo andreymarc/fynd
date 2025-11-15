@@ -25,15 +25,18 @@ CREATE TABLE IF NOT EXISTS verifications (
 -- Enable RLS on verifications
 ALTER TABLE verifications ENABLE ROW LEVEL SECURITY;
 
--- Verifications policies
+-- Verifications policies (drop if exists to make migration idempotent)
+DROP POLICY IF EXISTS "Anyone can view verifications" ON verifications;
 CREATE POLICY "Anyone can view verifications"
   ON verifications FOR SELECT
   USING (true);
 
+DROP POLICY IF EXISTS "Users can create verification requests" ON verifications;
 CREATE POLICY "Users can create verification requests"
   ON verifications FOR INSERT
   WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Item owners can update their verification requests" ON verifications;
 CREATE POLICY "Item owners can update their verification requests"
   ON verifications FOR UPDATE
   USING (auth.uid() = user_id AND status = 'pending');
@@ -61,6 +64,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Trigger to automatically update item verification status
+DROP TRIGGER IF EXISTS update_item_verification_trigger ON verifications;
 CREATE TRIGGER update_item_verification_trigger
 AFTER UPDATE ON verifications
 FOR EACH ROW

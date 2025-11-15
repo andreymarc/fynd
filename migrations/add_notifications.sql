@@ -21,19 +21,22 @@ CREATE INDEX IF NOT EXISTS idx_notifications_created_at ON notifications(created
 -- Enable Row Level Security
 ALTER TABLE notifications ENABLE ROW LEVEL SECURITY;
 
--- RLS Policies
+-- RLS Policies (drop if exists to make migration idempotent)
 -- Users can only view their own notifications
+DROP POLICY IF EXISTS "Users can view their own notifications" ON notifications;
 CREATE POLICY "Users can view their own notifications"
   ON notifications FOR SELECT
   USING (auth.uid() = user_id);
 
 -- System can insert notifications (via service role or functions)
 -- For now, allow authenticated users to insert (we'll restrict this in application code)
+DROP POLICY IF EXISTS "Users can create notifications" ON notifications;
 CREATE POLICY "Users can create notifications"
   ON notifications FOR INSERT
   WITH CHECK (true);
 
 -- Users can update their own notifications (mark as read)
+DROP POLICY IF EXISTS "Users can update their own notifications" ON notifications;
 CREATE POLICY "Users can update their own notifications"
   ON notifications FOR UPDATE
   USING (auth.uid() = user_id)
