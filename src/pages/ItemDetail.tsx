@@ -9,6 +9,7 @@ import VerifiedBadge from '../components/VerifiedBadge'
 import TrustIndicators from '../components/TrustIndicators'
 import VerificationRequest from '../components/VerificationRequest'
 import Messaging from '../components/Messaging'
+import { notifyItemOwnerOfClaim, notifyClaimerOfApproval, notifyClaimerOfRejection, notifyClaimerOfResolution } from '../lib/notifications'
 
 export default function ItemDetail() {
   const { t } = useTranslation()
@@ -144,7 +145,18 @@ export default function ItemDetail() {
         setClaimMessage('')
         setShowClaimForm(false)
         fetchClaims()
-        alert('Claim submitted! The owner will be notified.')
+        
+        // Notify item owner
+        if (item) {
+          await notifyItemOwnerOfClaim(
+            item.user_id,
+            item.id,
+            item.title,
+            user.email
+          )
+        }
+        
+        alert(t('itemDetail.claimSubmitted', 'Claim submitted! The owner will be notified.'))
       }
     } catch (error: any) {
       console.error('Error claiming item:', error)
@@ -165,14 +177,22 @@ export default function ItemDetail() {
 
       if (error) throw error
 
-      if (status === 'approved') {
-        // Mark item as resolved
-        await supabase
-          .from('items')
-          .update({ status: 'resolved' })
-          .eq('id', item.id)
-        
-        setItem({ ...item, status: 'resolved' })
+      // Find the claim to get the claimer's ID
+      const claim = claims.find(c => c.id === claimId)
+      
+      // Notify the claimer
+      if (claim) {
+        if (status === 'approved') {
+          await notifyClaimerOfApproval(claim.claimed_by_user_id, item.id, item.title)
+          // Mark item as resolved
+          await supabase
+            .from('items')
+            .update({ status: 'resolved' })
+            .eq('id', item.id)
+          setItem({ ...item, status: 'resolved' })
+        } else {
+          await notifyClaimerOfRejection(claim.claimed_by_user_id, item.id, item.title)
+        }
       }
 
       fetchClaims()
@@ -185,7 +205,7 @@ export default function ItemDetail() {
   const markAsResolved = async () => {
     if (!item || !user || user.id !== item.user_id) return
 
-    if (!confirm('Mark this item as resolved? This will close all pending claims.')) return
+    if (!confirm(t('itemDetail.confirmResolve', 'Mark this item as resolved? This will close all pending claims.'))) return
 
     try {
       const { error } = await supabase
@@ -194,6 +214,13 @@ export default function ItemDetail() {
         .eq('id', item.id)
 
       if (error) throw error
+      
+      // Notify all approved claimers
+      const approvedClaims = claims.filter(c => c.status === 'approved')
+      for (const claim of approvedClaims) {
+        await notifyClaimerOfResolution(claim.claimed_by_user_id, item.id, item.title)
+      }
+      
       setItem({ ...item, status: 'resolved' })
       fetchClaims()
     } catch (error: any) {

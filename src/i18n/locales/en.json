@@ -90,6 +90,9 @@
     "youClaimed": "You have claimed this item",
     "waitingResponse": "Waiting for owner's response...",
     "resolved": "This item has been resolved",
+    "claimSubmitted": "Claim submitted! The owner will be notified.",
+    "confirmResolve": "Mark this item as resolved? This will close all pending claims.",
+    "resolveError": "Failed to mark as resolved: ",
     "status": {
       "resolved": "Resolved",
       "claimApproved": "Claim Approved"
@@ -140,6 +143,40 @@
     "messageOwner": "Message Owner",
     "close": "Close",
     "user": "User"
+  },
+  "profile": {
+    "loading": "Loading...",
+    "notFound": "Profile not found",
+    "edit": "Edit profile",
+    "fullName": "Full Name",
+    "fullNamePlaceholder": "Enter your full name",
+    "bio": "Bio",
+    "bioPlaceholder": "Tell us about yourself...",
+    "phone": "Phone",
+    "phonePlaceholder": "Enter your phone number",
+    "location": "Location",
+    "locationPlaceholder": "Enter your location",
+    "save": "Save",
+    "cancel": "Cancel",
+    "saveError": "Failed to update profile: ",
+    "itemsPosted": "Items Posted",
+    "itemsResolved": "Resolved",
+    "itemsFound": "Items Found",
+    "claimsMade": "Claims Made",
+    "successRate": "Success Rate",
+    "user": "User"
+  },
+  "notifications": {
+    "notifications": "Notifications",
+    "noNotifications": "No notifications",
+    "loading": "Loading...",
+    "markAllRead": "Mark all read",
+    "markRead": "Mark as read",
+    "close": "Close",
+    "justNow": "Just now",
+    "minutesAgo": "min ago",
+    "hoursAgo": "h ago",
+    "daysAgo": "d ago"
   }
 }
 

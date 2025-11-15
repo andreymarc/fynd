@@ -1,9 +1,10 @@
 import { Link } from 'react-router-dom'
 import { User } from '@supabase/supabase-js'
-import { Plus, LogOut, Moon, Sun, MapPin } from 'lucide-react'
+import { Plus, LogOut, Moon, Sun, MapPin, UserCircle } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useTheme } from '../contexts/ThemeContext'
 import { useTranslation } from 'react-i18next'
+import NotificationCenter from './NotificationCenter'
 
 interface NavbarProps {
   user: User | null
@@ -68,24 +69,32 @@ export default function Navbar({ user }: NavbarProps) {
               {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
             </button>
 
-            {user ? (
-              <>
-                <Link
-                  to="/post"
-                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors"
-                >
-                  <Plus size={20} />
-                  <span className="hidden sm:inline">{t('nav.postItem')}</span>
-                </Link>
-                <button
-                  onClick={handleLogout}
-                  className="p-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
-                  aria-label="Logout"
-                >
-                  <LogOut size={20} />
-                </button>
-              </>
-            ) : (
+                    {user ? (
+                      <>
+                        <NotificationCenter userId={user.id} />
+                        <Link
+                          to="/profile"
+                          className="p-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+                          aria-label={t('nav.profile', 'Profile')}
+                        >
+                          <UserCircle size={20} />
+                        </Link>
+                        <Link
+                          to="/post"
+                          className="flex items-center gap-2 px-4 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors"
+                        >
+                          <Plus size={20} />
+                          <span className="hidden sm:inline">{t('nav.postItem')}</span>
+                        </Link>
+                        <button
+                          onClick={handleLogout}
+                          className="p-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+                          aria-label="Logout"
+                        >
+                          <LogOut size={20} />
+                        </button>
+                      </>
+                    ) : (
               <Link
                 to="/login"
                 className="px-4 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors"

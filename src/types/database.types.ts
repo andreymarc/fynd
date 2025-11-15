@@ -39,6 +39,29 @@ export interface User {
   full_name?: string
 }
 
+export interface Profile {
+  id: string
+  email?: string
+  full_name?: string
+  avatar_url?: string
+  bio?: string
+  phone?: string
+  location?: string
+  created_at: string
+  updated_at: string
+}
+
+export interface Notification {
+  id: string
+  user_id: string
+  type: 'claim' | 'claim_approved' | 'claim_rejected' | 'message' | 'item_resolved' | 'verification_approved' | 'verification_rejected'
+  title: string
+  message: string
+  link?: string
+  read: boolean
+  created_at: string
+}
+
 export interface Verification {
   id: string
   item_id: string

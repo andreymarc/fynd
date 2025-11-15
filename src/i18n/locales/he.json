@@ -6,7 +6,8 @@
   "nav": {
     "postItem": "פרסם פריט",
     "login": "התחבר",
-    "logout": "התנתק"
+    "logout": "התנתק",
+    "profile": "פרופיל"
   },
   "home": {
     "title": "אבידה ומציאה",
@@ -142,5 +143,39 @@
     "messageOwner": "שלח הודעה לבעלים",
     "close": "סגור",
     "user": "משתמש"
+  },
+  "profile": {
+    "loading": "טוען...",
+    "notFound": "פרופיל לא נמצא",
+    "edit": "ערוך פרופיל",
+    "fullName": "שם מלא",
+    "fullNamePlaceholder": "הכנס את שמך המלא",
+    "bio": "ביוגרפיה",
+    "bioPlaceholder": "ספר לנו על עצמך...",
+    "phone": "טלפון",
+    "phonePlaceholder": "הכנס את מספר הטלפון שלך",
+    "location": "מיקום",
+    "locationPlaceholder": "הכנס את המיקום שלך",
+    "save": "שמור",
+    "cancel": "בטל",
+    "saveError": "נכשל בעדכון הפרופיל: ",
+    "itemsPosted": "פריטים שפורסמו",
+    "itemsResolved": "נפתרו",
+    "itemsFound": "פריטים שנמצאו",
+    "claimsMade": "תביעות שהוגשו",
+    "successRate": "שיעור הצלחה",
+    "user": "משתמש"
+  },
+  "notifications": {
+    "notifications": "התראות",
+    "noNotifications": "אין התראות",
+    "loading": "טוען...",
+    "markAllRead": "סמן הכל כנקרא",
+    "markRead": "סמן כנקרא",
+    "close": "סגור",
+    "justNow": "עכשיו",
+    "minutesAgo": "דקות לפני",
+    "hoursAgo": "שעות לפני",
+    "daysAgo": "ימים לפני"
   }
 }

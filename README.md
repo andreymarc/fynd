@@ -22,6 +22,8 @@ A mobile-friendly web application for posting and finding lost items, built with
 - 🔄 Manual Refresh - Refresh button to check for new items
 - 💬 Direct Messaging - Private chat between item owners and claimers
 - 📨 Message Notifications - Unread message counts and read receipts
+- 👤 User Profiles - Public profiles with stats, success rate, and trust indicators
+- 🔔 Notifications System - In-app notifications for claims, messages, and item updates
 
 ## Tech Stack
 
@@ -170,6 +172,64 @@ CREATE POLICY "Users can mark received messages as read"
   USING (auth.uid() = receiver_id)
   WITH CHECK (auth.uid() = receiver_id);
 
+-- Create profiles table
+CREATE TABLE profiles (
+  id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  email TEXT,
+  full_name TEXT,
+  avatar_url TEXT,
+  bio TEXT,
+  phone TEXT,
+  location TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
+);
+
+ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Anyone can view profiles"
+  ON profiles FOR SELECT
+  USING (true);
+
+CREATE POLICY "Users can insert their own profile"
+  ON profiles FOR INSERT
+  WITH CHECK (auth.uid() = id);
+
+CREATE POLICY "Users can update their own profile"
+  ON profiles FOR UPDATE
+  USING (auth.uid() = id);
+
+-- Create notifications table
+CREATE TABLE notifications (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  type TEXT NOT NULL CHECK (type IN ('claim', 'claim_approved', 'claim_rejected', 'message', 'item_resolved', 'verification_approved', 'verification_rejected')),
+  title TEXT NOT NULL,
+  message TEXT NOT NULL,
+  link TEXT,
+  read BOOLEAN DEFAULT false,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
+);
+
+CREATE INDEX idx_notifications_user_id ON notifications(user_id);
+CREATE INDEX idx_notifications_read ON notifications(user_id, read);
+CREATE INDEX idx_notifications_created_at ON notifications(created_at DESC);
+
+ALTER TABLE notifications ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can view their own notifications"
+  ON notifications FOR SELECT
+  USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can create notifications"
+  ON notifications FOR INSERT
+  WITH CHECK (true);
+
+CREATE POLICY "Users can update their own notifications"
+  ON notifications FOR UPDATE
+  USING (auth.uid() = user_id)
+  WITH CHECK (auth.uid() = user_id);
+
 -- Create storage bucket for images
 INSERT INTO storage.buckets (id, name, public) VALUES ('item-images', 'item-images', true);
 
@@ -217,6 +277,16 @@ Make sure to create a `.env` file with:
 
 - `VITE_SUPABASE_URL`: Your Supabase project URL
 - `VITE_SUPABASE_ANON_KEY`: Your Supabase anonymous key
+
+## Migrations
+
+Additional database migrations are available in the `migrations/` folder:
+
+- `add_profiles.sql` - Creates user profiles table with auto-creation trigger
+- `add_notifications.sql` - Creates notifications system with helper functions
+- `add_messaging.sql` - Creates messaging table for direct communication
+
+Run these migrations in your Supabase SQL Editor after setting up the base tables.
 
 ## Build for Production
 

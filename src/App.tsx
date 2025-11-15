@@ -7,6 +7,7 @@ import Home from './pages/Home'
 import Login from './pages/Login'
 import PostItem from './pages/PostItem'
 import ItemDetail from './pages/ItemDetail'
+import Profile from './pages/Profile'
 import Navbar from './components/Navbar'
 
 function App() {
@@ -56,11 +57,15 @@ function App() {
               path="/login" 
               element={user ? <Navigate to="/" /> : <Login />} 
             />
-            <Route 
-              path="/post" 
-              element={user ? <PostItem /> : <Navigate to="/login" />} 
-            />
-            <Route path="/item/:id" element={<ItemDetail />} />
+                    <Route
+                      path="/post"
+                      element={user ? <PostItem /> : <Navigate to="/login" />}
+                    />
+                    <Route
+                      path="/profile"
+                      element={user ? <Profile /> : <Navigate to="/login" />}
+                    />
+                    <Route path="/item/:id" element={<ItemDetail />} />
           </Routes>
         </main>
       </div>

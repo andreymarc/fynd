@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { supabase } from '../lib/supabase'
 import { Message } from '../types/database.types'
 import { Send, Loader } from 'lucide-react'
+import { notifyUserOfMessage } from '../lib/notifications'
 
 interface MessagingProps {
   itemId: string
@@ -108,6 +109,15 @@ export default function Messaging({
         })
 
       if (error) throw error
+
+      // Get item title for notification (we'll need to fetch it or pass it as prop)
+      // For now, just notify without item title
+      await notifyUserOfMessage(
+        otherUserId,
+        itemId,
+        'Item', // We could fetch the item title, but this is simpler
+        otherUserEmail
+      )
 
       setNewMessage('')
       // Refresh messages
