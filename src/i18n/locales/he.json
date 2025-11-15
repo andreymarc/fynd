@@ -18,7 +18,19 @@
     "allCategories": "כל הקטגוריות",
     "noItems": "לא נמצאו פריטים",
     "refreshItems": "רענן פריטים",
-    "loading": "טוען פריטים..."
+    "loading": "טוען פריטים...",
+    "listView": "רשימה",
+    "mapView": "מפה",
+    "away": "מרחק",
+    "favorite": "שמור",
+    "favorited": "שמור",
+    "addFavorite": "הוסף למועדפים",
+    "removeFavorite": "הסר ממועדפים",
+    "share": "שתף"
+  },
+  "map": {
+    "yourLocation": "המיקום שלך",
+    "noItemsWithLocation": "לא נמצאו פריטים עם נתוני מיקום"
   },
   "login": {
     "title": "התחברות",

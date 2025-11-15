@@ -18,7 +18,19 @@
     "allCategories": "All Categories",
     "noItems": "No items found",
     "refreshItems": "Refresh Items",
-    "loading": "Loading items..."
+    "loading": "Loading items...",
+    "listView": "List",
+    "mapView": "Map",
+    "away": "away",
+    "favorite": "Save",
+    "favorited": "Saved",
+    "addFavorite": "Add to favorites",
+    "removeFavorite": "Remove from favorites",
+    "share": "Share"
+  },
+  "map": {
+    "yourLocation": "Your Location",
+    "noItemsWithLocation": "No items with location data found"
   },
   "login": {
     "title": "Login",

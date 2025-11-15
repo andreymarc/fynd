@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { supabase } from '../lib/supabase'
 import { Upload, X, MapPin, Loader } from 'lucide-react'
 import { categories, ItemType } from '../lib/categories'
+import { geocodeAddress, reverseGeocode } from '../lib/geocoding'
 
 export default function PostItem() {
   const { t } = useTranslation()
@@ -12,6 +13,8 @@ export default function PostItem() {
   const [category, setCategory] = useState<'lost' | 'found'>('lost')
   const [itemType, setItemType] = useState<ItemType>('other')
   const [location, setLocation] = useState('')
+  const [locationLat, setLocationLat] = useState<number | null>(null)
+  const [locationLon, setLocationLon] = useState<number | null>(null)
   const [contactInfo, setContactInfo] = useState('')
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
@@ -32,35 +35,6 @@ export default function PostItem() {
     }
   }
 
-  const reverseGeocode = async (lat: number, lon: number): Promise<string> => {
-    try {
-      // Using OpenStreetMap Nominatim API (free, no API key required)
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18&addressdetails=1`
-      )
-      const data = await response.json()
-      
-      if (data.address) {
-        const address = data.address
-        // Build a readable address from components
-        const parts = []
-        if (address.road) parts.push(address.road)
-        if (address.house_number) parts.push(address.house_number)
-        if (address.suburb || address.neighbourhood) parts.push(address.suburb || address.neighbourhood)
-        if (address.city || address.town || address.village) parts.push(address.city || address.town || address.village)
-        if (address.state) parts.push(address.state)
-        
-        return parts.length > 0 ? parts.join(', ') : data.display_name || `${lat.toFixed(4)}, ${lon.toFixed(4)}`
-      }
-      
-      return `${lat.toFixed(4)}, ${lon.toFixed(4)}`
-    } catch (error) {
-      console.error('Reverse geocoding error:', error)
-      // Fallback to coordinates if reverse geocoding fails
-      return `${lat.toFixed(4)}, ${lon.toFixed(4)}`
-    }
-  }
-
   const detectLocation = async () => {
     if (!navigator.geolocation) {
       setError('Geolocation is not supported by your browser')
@@ -76,6 +50,8 @@ export default function PostItem() {
           const { latitude, longitude } = position.coords
           const address = await reverseGeocode(latitude, longitude)
           setLocation(address)
+          setLocationLat(latitude)
+          setLocationLon(longitude)
         } catch (error: any) {
           setError('Failed to get location address: ' + error.message)
         } finally {
@@ -149,6 +125,17 @@ export default function PostItem() {
         imageUrl = publicUrl
       }
 
+      // Use stored coordinates if available, otherwise geocode
+      let latitude: number | null = locationLat
+      let longitude: number | null = locationLon
+      if (location && (!latitude || !longitude)) {
+        const coords = await geocodeAddress(location)
+        if (coords) {
+          latitude = coords.latitude
+          longitude = coords.longitude
+        }
+      }
+
       // Insert item
       const { error: insertError } = await supabase.from('items').insert({
         title,
@@ -156,6 +143,8 @@ export default function PostItem() {
         category,
         item_type: itemType,
         location: location || null,
+        latitude: latitude,
+        longitude: longitude,
         contact_info: contactInfo || null,
         image_url: imageUrl || null,
         user_id: user.id,

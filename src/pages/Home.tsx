@@ -3,25 +3,75 @@ import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { supabase } from '../lib/supabase'
 import { Item } from '../types/database.types'
-import { Search, MapPin, Calendar, CheckCircle, RefreshCw } from 'lucide-react'
+import { Search, MapPin, CheckCircle, RefreshCw, Map, List, Heart, Share2, Clock, Navigation } from 'lucide-react'
 import { categories, ItemType, getCategoryById } from '../lib/categories'
 import VerifiedBadge from '../components/VerifiedBadge'
+import MapView from '../components/MapView'
+import { calculateDistance, formatDistance, getTimeAgo, shareItem } from '../lib/utils'
 
 export default function Home() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const [items, setItems] = useState<Item[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
   const [filter, setFilter] = useState<'all' | 'lost' | 'found'>('all')
   const [itemTypeFilter, setItemTypeFilter] = useState<ItemType | 'all'>('all')
   const [claimCounts, setClaimCounts] = useState<Record<string, number>>({})
+  const [viewMode, setViewMode] = useState<'list' | 'map'>('list')
+  const [favorites, setFavorites] = useState<Set<string>>(new Set())
+  const [userLocation, setUserLocation] = useState<{ lat: number; lon: number } | null>(null)
   // Real-time notification state (disabled to avoid costs)
   // const [newItemsCount, setNewItemsCount] = useState(0)
   // const [showNewItemsNotification, setShowNewItemsNotification] = useState(false)
   const lastItemIdRef = useRef<string | null>(null)
 
+  const loadFavorites = () => {
+    const saved = localStorage.getItem('fynd_favorites')
+    if (saved) {
+      try {
+        setFavorites(new Set(JSON.parse(saved)))
+      } catch (e) {
+        console.error('Error loading favorites:', e)
+      }
+    }
+  }
+
+  const toggleFavorite = (itemId: string) => {
+    const newFavorites = new Set(favorites)
+    if (newFavorites.has(itemId)) {
+      newFavorites.delete(itemId)
+    } else {
+      newFavorites.add(itemId)
+    }
+    setFavorites(newFavorites)
+    localStorage.setItem('fynd_favorites', JSON.stringify(Array.from(newFavorites)))
+  }
+
+  const getUserLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setUserLocation({
+            lat: position.coords.latitude,
+            lon: position.coords.longitude,
+          })
+        },
+        () => {
+          // User denied or error - that's okay
+        }
+      )
+    }
+  }
+
+  const getItemDistance = (item: Item): number | null => {
+    if (!userLocation || !item.latitude || !item.longitude) return null
+    return calculateDistance(userLocation.lat, userLocation.lon, item.latitude, item.longitude)
+  }
+
   useEffect(() => {
     fetchItems()
+    loadFavorites()
+    getUserLocation()
     
     // Real-time subscriptions disabled to avoid Supabase costs
     // To re-enable: Uncomment the code below and enable replication in Supabase dashboard
@@ -181,16 +231,40 @@ export default function Home() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-6 sm:py-8">
-      {/* Manual Refresh Button - Real-time disabled to avoid Supabase costs */}
-      <div className="mb-4 flex justify-end">
+      {/* View Toggle and Refresh Button */}
+      <div className="mb-4 flex justify-between items-center">
+        <div className="flex items-center bg-gray-100 dark:bg-gray-800 rounded-lg p-1 border border-gray-200 dark:border-gray-700">
           <button
-            onClick={handleRefresh}
-            className="px-4 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors text-sm font-medium flex items-center gap-2"
-            title={t('home.refreshItems')}
+            onClick={() => setViewMode('list')}
+            className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all duration-200 flex items-center gap-2 ${
+              viewMode === 'list'
+                ? 'bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-sm'
+                : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+            }`}
           >
-            <RefreshCw size={16} />
-            {t('home.refreshItems')}
+            <List size={16} />
+            <span className="hidden sm:inline">{t('home.listView', 'List')}</span>
           </button>
+          <button
+            onClick={() => setViewMode('map')}
+            className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all duration-200 flex items-center gap-2 ${
+              viewMode === 'map'
+                ? 'bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-sm'
+                : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+            }`}
+          >
+            <Map size={16} />
+            <span className="hidden sm:inline">{t('home.mapView', 'Map')}</span>
+          </button>
+        </div>
+        <button
+          onClick={handleRefresh}
+          className="px-4 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors text-sm font-medium flex items-center gap-2"
+          title={t('home.refreshItems')}
+        >
+          <RefreshCw size={16} />
+          {t('home.refreshItems')}
+        </button>
       </div>
 
       {/* Search and Filter */}
@@ -277,81 +351,144 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Items Grid */}
-      {filteredItems.length === 0 ? (
-        <div className="text-center py-12">
-          <p className="text-gray-500 dark:text-gray-400 text-lg">{t('home.noItems')}</p>
-        </div>
+      {/* Map View or List View */}
+      {viewMode === 'map' ? (
+        <MapView
+          items={items}
+          filter={filter}
+          itemTypeFilter={itemTypeFilter}
+          searchTerm={searchTerm}
+        />
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filteredItems.map((item) => (
-            <Link
-              key={item.id}
-              to={`/item/${item.id}`}
-              className="bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow p-4 border border-gray-200 dark:border-gray-700"
-            >
-              {item.image_url && (
-                <img
-                  src={item.image_url}
-                  alt={item.title}
-                  className="w-full h-48 object-cover rounded-lg mb-3"
-                />
-              )}
-              <div className="space-y-2">
-                <div className="flex items-start justify-between gap-2">
-                  <h3 className="font-semibold text-lg line-clamp-2 flex-1 text-gray-900 dark:text-gray-100">{item.title}</h3>
-                  <div className="flex flex-col items-end gap-1">
-                    <span
-                      className={`px-2 py-1 rounded text-xs font-medium whitespace-nowrap ${
-                        item.category === 'lost'
-                          ? 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300'
-                          : 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300'
-                      }`}
-                    >
-                      {item.category}
-                    </span>
-                    {claimCounts[item.id] > 0 && (
-                      <span className="px-2 py-0.5 rounded text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 flex items-center gap-1">
-                        <CheckCircle size={12} />
-                        {claimCounts[item.id]} claim{claimCounts[item.id] > 1 ? 's' : ''}
-                      </span>
-                    )}
-                    <VerifiedBadge 
-                      verified={item.verified || false} 
-                      verificationStatus={item.verification_status}
-                      size="sm"
-                    />
+        <>
+          {/* Items Grid */}
+          {filteredItems.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-gray-500 dark:text-gray-400 text-lg">{t('home.noItems')}</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {filteredItems.map((item) => {
+                const distance = getItemDistance(item)
+                const isFavorite = favorites.has(item.id)
+                const cat = item.item_type ? getCategoryById(item.item_type as ItemType) : null
+                const CategoryIcon = cat?.icon || MapPin
+                
+                return (
+                  <div
+                    key={item.id}
+                    className="bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-lg transition-all duration-200 border border-gray-200 dark:border-gray-700 overflow-hidden group"
+                  >
+                    <Link to={`/item/${item.id}`} className="block">
+                      {item.image_url && (
+                        <div className="relative w-full h-48 overflow-hidden">
+                          <img
+                            src={item.image_url}
+                            alt={item.title}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                          />
+                          <div className="absolute top-2 right-2 flex gap-2">
+                            <VerifiedBadge 
+                              verified={item.verified || false} 
+                              verificationStatus={item.verification_status}
+                              size="sm"
+                            />
+                            {claimCounts[item.id] > 0 && (
+                              <span className="px-2 py-1 rounded text-xs font-medium bg-blue-600 dark:bg-blue-500 text-white flex items-center gap-1 shadow-lg">
+                                <CheckCircle size={12} />
+                                {claimCounts[item.id]}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                      <div className="p-4 space-y-3">
+                        <div className="flex items-start justify-between gap-2">
+                          <h3 className="font-semibold text-lg line-clamp-2 flex-1 text-gray-900 dark:text-gray-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                            {item.title}
+                          </h3>
+                        </div>
+                        
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span
+                            className={`px-2.5 py-1 rounded-md text-xs font-medium ${
+                              item.category === 'lost'
+                                ? 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300'
+                                : 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300'
+                            }`}
+                          >
+                            {item.category === 'lost' ? t('home.filterLost') : t('home.filterFound')}
+                          </span>
+                          {item.item_type && cat && (
+                            <span className={`px-2.5 py-1 rounded-md text-xs font-medium flex items-center gap-1 ${cat.color} dark:opacity-90`}>
+                              <CategoryIcon size={12} />
+                              {t(`categories.${item.item_type}`)}
+                            </span>
+                          )}
+                        </div>
+                        
+                        <p className="text-gray-600 dark:text-gray-400 text-sm line-clamp-2">{item.description}</p>
+                        
+                        <div className="flex items-center justify-between pt-2 border-t border-gray-100 dark:border-gray-700">
+                          <div className="flex flex-col gap-1.5">
+                            {item.location && (
+                              <div className="flex items-center text-gray-500 dark:text-gray-400 text-xs">
+                                <MapPin size={14} className="mr-1.5 flex-shrink-0" />
+                                <span className="truncate">{item.location}</span>
+                              </div>
+                            )}
+                            {distance !== null && (
+                              <div className="flex items-center text-blue-600 dark:text-blue-400 text-xs font-medium">
+                                <Navigation size={14} className="mr-1.5 flex-shrink-0" />
+                                <span>{formatDistance(distance)} {t('home.away', 'away')}</span>
+                              </div>
+                            )}
+                            <div className="flex items-center text-gray-400 dark:text-gray-500 text-xs">
+                              <Clock size={14} className="mr-1.5 flex-shrink-0" />
+                              <span>{getTimeAgo(item.created_at, i18n.language)}</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </Link>
+                    
+                    {/* Quick Actions */}
+                    <div className="px-4 pb-4 flex items-center gap-2 border-t border-gray-100 dark:border-gray-700 pt-3">
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault()
+                          e.stopPropagation()
+                          toggleFavorite(item.id)
+                        }}
+                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+                          isFavorite
+                            ? 'bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400'
+                            : 'bg-gray-50 dark:bg-gray-700/50 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
+                        }`}
+                        title={isFavorite ? t('home.removeFavorite', 'Remove from favorites') : t('home.addFavorite', 'Add to favorites')}
+                      >
+                        <Heart size={14} className={isFavorite ? 'fill-current' : ''} />
+                        <span className="hidden sm:inline">{isFavorite ? t('home.favorited', 'Saved') : t('home.favorite', 'Save')}</span>
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault()
+                          e.stopPropagation()
+                          shareItem(item.id, item.title)
+                        }}
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium bg-gray-50 dark:bg-gray-700/50 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                        title={t('home.share', 'Share item')}
+                      >
+                        <Share2 size={14} />
+                        <span className="hidden sm:inline">{t('home.share', 'Share')}</span>
+                      </button>
+                    </div>
                   </div>
-                </div>
-                {item.item_type && (
-                  <div className="flex items-center gap-1">
-                    {(() => {
-                      const cat = getCategoryById(item.item_type as ItemType)
-                      const Icon = cat.icon
-                      return (
-                        <span className={`px-2 py-0.5 rounded text-xs font-medium flex items-center gap-1 ${cat.color} dark:opacity-90`}>
-                          <Icon size={12} />
-                          {cat.name}
-                        </span>
-                      )
-                    })()}
-                  </div>
-                )}
-                <p className="text-gray-600 dark:text-gray-400 text-sm line-clamp-2">{item.description}</p>
-                {item.location && (
-                  <div className="flex items-center text-gray-500 dark:text-gray-400 text-sm">
-                    <MapPin size={16} className="mr-1" />
-                    <span className="truncate">{item.location}</span>
-                  </div>
-                )}
-                <div className="flex items-center text-gray-400 dark:text-gray-500 text-xs">
-                  <Calendar size={14} className="mr-1" />
-                  {new Date(item.created_at).toLocaleDateString()}
-                </div>
-              </div>
-            </Link>
-          ))}
-        </div>
+                )
+              })}
+            </div>
+          )}
+        </>
       )}
     </div>
   )

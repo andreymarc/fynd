@@ -5,6 +5,8 @@ export interface Item {
   category: 'lost' | 'found'
   item_type?: string // 'electronics', 'clothing', 'keys', etc.
   location?: string
+  latitude?: number
+  longitude?: number
   image_url?: string
   contact_info?: string
   user_id: string
