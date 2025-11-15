@@ -28,11 +28,23 @@ function App() {
       setLoading(false)
     })
 
-    // Listen for auth changes
+    // Listen for auth changes (sign in, sign out, email confirmation, password reset, etc.)
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
       setUser(session?.user ?? null)
+      
+      // Handle email confirmation
+      if (event === 'SIGNED_IN' && session) {
+        // User successfully signed in (could be from email confirmation)
+        // The session is automatically set, so user will be redirected
+      }
+      
+      // Handle password reset
+      if (event === 'PASSWORD_RECOVERY') {
+        // User clicked password reset link
+        // The Login component will handle this via URL params
+      }
     })
 
     return () => subscription.unsubscribe()
